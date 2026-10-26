@@ -62,7 +62,7 @@ graph TD
 
     subgraph "Machine Learning Intelligence"
         D --> E[Stratified Split & Cross-Validation]
-        E --> F[Random Forest Classifier (350 Trees)]
+        E --> F["Random Forest Classifier (350 Trees)"]
         F --> G[Probability Calibration & SHAP Attribution]
     end
 
