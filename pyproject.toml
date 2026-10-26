@@ -1,9 +1,13 @@
 [project]
 name = "telechurnai"
-version = "0.1.0"
-description = "Add your description here"
+version = "1.0.0"
+description = "TeleChurn AI - Enterprise Customer Churn Prediction and Retention Intelligence System"
 readme = "README.md"
 requires-python = ">=3.12"
+authors = [
+    { name = "UMAR MUKTHAR", email = "umarom98425@gmail.com" }
+]
+keywords = ["machine-learning", "churn-prediction", "telecom", "random-forest", "retention-analytics", "enterprise-ai"]
 dependencies = [
     "numpy>=2.3.5",
     "pandas>=2.3.3",
@@ -11,3 +15,7 @@ dependencies = [
     "streamlit>=1.40.2",
     "plotly>=5.24.1",
 ]
+
+[project.urls]
+Homepage = "https://umarmukthar03.github.io/customer-churn-prediction/"
+Repository = "https://github.com/UMARMUKTHAR03/customer-churn-prediction"

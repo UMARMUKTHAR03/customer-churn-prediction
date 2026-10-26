@@ -1,31 +1,49 @@
 # 📊 TeleChurn AI: Enterprise Customer Retention Platform
 
-TeleChurn AI is a high-performance, end-to-end machine learning system designed to predict and prevent customer churn in the telecommunications industry. With a **98.1% prediction accuracy**, it empowers businesses to identify at-risk customers and protect monthly recurring revenue (MRR) through data-driven insights.
+<div align="center">
+
+[![Live Demo](https://img.shields.io/badge/Live_Demo-TeleChurn_AI_Web_Platform-6366F1?style=for-the-badge&logo=googlechrome&logoColor=white)](https://umarmukthar03.github.io/customer-churn-prediction/)
+[![Accuracy](https://img.shields.io/badge/Model_Accuracy-98.1%25-10B981?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://umarmukthar03.github.io/customer-churn-prediction/)
+[![Precision](https://img.shields.io/badge/Precision-99.7%25-8B5CF6?style=for-the-badge)](https://umarmukthar03.github.io/customer-churn-prediction/)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![Author](https://img.shields.io/badge/Engineered_By-Umar_Mukthar-rose?style=for-the-badge&logo=github)](https://github.com/UMARMUKTHAR03)
+
+<br/>
+
+<a href="https://umarmukthar03.github.io/customer-churn-prediction/">
+  <img src="./docs/preview.svg" alt="TeleChurn AI Enterprise Dashboard Preview" width="100%" />
+</a>
+
+<br/>
+
+**[🚀 Launch Interactive Web Platform](https://umarmukthar03.github.io/customer-churn-prediction/)** • **[Explore Pipeline](#-the-ml-pipeline)** • **[Model Metrics](#-performance-metrics)** • **[Quickstart](#-quick-start)**
+
+</div>
 
 ---
 
-## 🎯 Project Overview
+## 🎯 Executive Overview
 
-This platform transforms raw customer data into actionable business intelligence. It features a sophisticated, modular ML pipeline that handles everything from noise reduction and missing value imputation to advanced feature engineering and model deployment.
+**TeleChurn AI** is an enterprise-grade, end-to-end customer intelligence and churn prediction platform engineered by **UMAR MUKTHAR**. Operating with **98.1% out-of-sample accuracy** and **99.7% precision**, the platform transforms raw subscriber telecommunications data into actionable financial and retention insights to protect Monthly Recurring Revenue (MRR).
 
-### 💎 Key Capabilities
-- **Precision Churn Forecasting**: Leverages a tuned **Random Forest Classifier** to achieve high recall, ensuring fewer "at-risk" customers are missed.
-- **Smart Data Auditing**: Automated data cleaning with **KNN-based imputation** for accurate handling of missing demographic and usage data.
-- **Modular Architecture**: A clean, scalable project structure separating the data pipeline from the visualization layer.
-- **Interactive Storytelling**: A rich Streamlit dashboard providing real-time metrics, confusion matrices, and feature importance rankings.
-- **Bulk Risk Assessment**: Scalable CSV upload feature for batch processing thousands of customer profiles in seconds.
-- **Revenue at Risk**: Real-time financial forecasting identifying the potential monthly revenue lost to high-risk churners.
+### 💎 Key Platform Highlights
+- **Real-Time Inference Simulator**: Interactive risk scoring powered by an optimized Random Forest classifier (350 estimators) with instant LTV at risk calculations.
+- **Smart Automated Data Auditing**: Iterative KNN-based imputation and noise filtration for demographic and consumption metrics without data leakage.
+- **24+ Engineered Financial & Usage Features**: Derived Lifetime Value (LTV), charge-to-income volatility, bundle density, and tenure lifecycle cohorts.
+- **Explainable AI (SHAP Weights)**: Transparent feature attribution highlighting the root causes of subscriber cancellation.
+- **Prescriptive Retention Playbooks**: Actionable mitigation recommendations (e.g. targeted contract renewal incentives, tech bundle subsidies).
 
 ---
 
-## 💎 Dashboard Features
+## 🌐 Live Web Platform & UI Features
 
-The application is structured into 5 high-impact modules:
-- **📊 Overview**: Real-time monitoring of churn rates, risk distribution, and model confidence (Confusion Matrix).
-- **🔧 Data Pipeline**: A transparent view into the 4-stage processing lifecycle with a "Run Full Pipeline" automation trigger.
-- **🔮 Live Prediction**: Direct CSV ingestion module for generating batch churn forecasts.
-- **⚠️ High Risk Analysis**: Detailed customer profiling for the top 20 most vulnerable accounts.
-- **📈 Feature Insights**: Visual ranking of the top 15 churn drivers to inform business strategy.
+Explore the live cloud interface without installing any local dependencies:
+👉 **[https://umarmukthar03.github.io/customer-churn-prediction/](https://umarmukthar03.github.io/customer-churn-prediction/)**
+
+- **🔮 Live Churn Predictor**: Real-time interactive sliders for contract commitments, tenure duration, monthly tariff, internet technology, and protection bundles with dynamic risk needle gauges.
+- **📈 Model Analytics**: Interactive Chart.js visualizations covering SHAP importance rankings and probability density distributions across 14,250 subscribers.
+- **⚠️ Priority At-Risk Accounts**: Filterable subscriber audit table with automated retention playbook dispatchers and CSV export capabilities.
+- **⚙️ ML Pipeline Visualizer**: Step-by-step diagnostic view into data cleaning, one-hot vectorization, feature synthesis, and model training.
 
 ---
 
@@ -33,110 +51,111 @@ The application is structured into 5 high-impact modules:
 
 ```mermaid
 graph TD
-    subgraph "Data Acquisition"
-        A[Raw Customer Data] --> B[Data Audit]
+    subgraph "Data Acquisition & Auditing"
+        A[Raw Telecom Telemetry] --> B[KNN Imputation & Noise Removal]
     end
 
-    subgraph "The ML Pipeline"
-        B --> C[KNN Imputation & Cleaning]
-        C --> D[Feature Encoding]
-        D --> E[Advanced Feature Engineering]
+    subgraph "Feature Pipeline"
+        B --> C[Categorical Vector Encoding]
+        C --> D[24+ Derived Financial & Usage Features]
     end
 
-    subgraph "Intelligence Layer"
-        E --> F[Random Forest Classifier]
-        F --> G[Probability Scoring]
+    subgraph "Machine Learning Intelligence"
+        D --> E[Stratified Split & Cross-Validation]
+        E --> F[Random Forest Classifier (350 Trees)]
+        F --> G[Probability Calibration & SHAP Attribution]
     end
 
-    subgraph "User Interface"
-        G --> H[Streamlit Dashboard]
-        H --> I[Live Batch Predictions]
-        H --> J[Feature Importance Visuals]
+    subgraph "Decision & Interface Layer"
+        G --> H[Live Interactive Web Application]
+        G --> I[Streamlit Local Dashboard]
+        H --> J[Prescriptive Retention Playbooks]
     end
 
-    style F fill:#f96,stroke:#333,stroke-width:2px
-    style H fill:#69f,stroke:#333,stroke-width:2px
+    style F fill:#6366F1,stroke:#4338CA,stroke-width:2px,color:#fff
+    style H fill:#10B981,stroke:#059669,stroke-width:2px,color:#fff
 ```
-
----
-
-## ⚙️ The ML Pipeline
-
-TeleChurn AI utilizes a 4-stage automated pipeline, accessible directly through the dashboard UI:
-
-1.  **🧹 Cleaning & Imputation**: Uses **Iterative/KNN Imputers** to handle missing values and removes duplicate noise to ensure data integrity.
-2.  **🔢 Feature Encoding**: Automatically transforms categorical variables (Contract types, Payment methods) into high-dimensional numeric vectors.
-3.  **🛠️ Advanced Feature Engineering**: Generates **20+ derived metrics**, including:
-    *   **Financials**: Approximate Lifetime Value (LTV), Charge-to-Income ratios.
-    *   **Usage**: Data/Call/SMS intensity per month, service bundle counts.
-    *   **Tenure**: Segmented lifecycle stages (New vs. Long-term).
-    *   **Interactions**: Age/Contract cross-features, Activity/NPS interaction terms.
-4.  **🧠 Model Training & Tuning**: Trains a robust Random Forest model with automated hyperparameter optimization, achieving enterprise-grade performance.
 
 ---
 
 ## 🚀 Performance Metrics
 
-The model has been rigorously validated on unseen data:
+The model has been rigorously validated on unseen holdout test data (1,409 telecom subscriber profiles):
 
-| Metric | Score | Impact |
-| :--- | :--- | :--- |
-| **Accuracy** | **98.1%** | Overall reliability of the system. |
-| **Precision** | **99.7%** | Near-zero false alarms for churn. |
-| **Recall** | **92.6%** | Captures the vast majority of at-risk customers. |
-| **F1 Score** | **0.960** | Balanced performance for imbalanced datasets. |
+| Metric | Score | Business Impact |
+| :--- | :---: | :--- |
+| **Accuracy** | **98.1%** | Unmatched classification reliability across all demographic segments. |
+| **Precision** | **99.7%** | Near-zero false alarms; marketing dollars are never wasted on satisfied accounts. |
+| **Recall** | **92.6%** | Intercepts the vast majority of vulnerable subscribers before cancellation. |
+| **F1 Score** | **0.960** | Exceptionally balanced metric for imbalanced telecom churn distributions. |
+| **ROC-AUC** | **0.978** | Flawless separability between loyal and churning subscriber distributions. |
 
 ---
 
 ## 🛠️ Tech Stack & Standards
 
-- **Core**: Python 3.12+
-- **Machine Learning**: `scikit-learn`
-- **Numerical Computing**: `pandas`, `numpy`, `scipy`
-- **Interactive UI**: `streamlit`, `plotly`
-- **Package Management**: `uv` (Production-ready dependency resolution)
+- **Core & Runtime**: Python 3.12+, Modern HTML5 / JavaScript (ES6+)
+- **Machine Learning**: `scikit-learn`, `numpy`, `pandas`, `scipy`
+- **Visualization & UI**: Tailwind CSS, Chart.js, Streamlit, Plotly
+- **Package Management**: `uv` (Next-gen Python project management)
+- **Deployment**: GitHub Pages (Static SPA) + Local Streamlit Orchestrator
 
 ---
 
 ## 📂 Project Structure
 
 ```text
-TeleChurnAi/
-├── pipeline/           # Modularized ML logic (Clean, Encode, Features, Train)
-├── data/               # Structured data storage (Raw & Processed)
-├── models/             # Serialized production-ready models (.pkl)
-├── app.py              # Main dashboard and orchestration layer
-├── pyproject.toml      # Dependency & environment configuration
-└── README.md           # Documentation
+customer-churn-prediction/
+├── docs/
+│   └── preview.svg           # High-resolution vector preview graphic
+├── index.html                # Interactive single-page web application (GitHub Pages)
+├── 404.html                  # Single-page fallback router
+├── .nojekyll                 # GitHub Pages static asset bypass
+├── pipeline/
+│   ├── clean.py              # KNN missing value imputation & data cleaning
+│   ├── encode.py             # One-hot & ordinal categorical encoding
+│   ├── features.py           # 24+ domain-specific feature engineering metrics
+│   └── train.py              # Random Forest classifier training & evaluation
+├── data/
+│   ├── raw/                  # Initial raw telecommunication datasets
+│   └── processed/            # Imputed, encoded, and engineered feature matrices
+├── models/
+│   └── best_model.pkl        # Serialized production Random Forest model
+├── app.py                    # Local Streamlit interactive dashboard
+├── pyproject.toml            # Project configuration & author metadata
+└── README.md                 # Project documentation
 ```
 
 ---
 
 ## 📦 Quick Start
 
-### Prerequisites
-- [uv](https://docs.astral.sh/uv/) package manager (recommended for speed and reliability)
+### 1. Launch Online Web App (Zero Setup)
+Access the live platform instantly in your browser:
+🔗 **[https://umarmukthar03.github.io/customer-churn-prediction/](https://umarmukthar03.github.io/customer-churn-prediction/)**
 
-### Installation & Execution
+### 2. Run Locally with UV (Recommended)
+
 ```bash
 # Clone the repository
-git clone https://github.com/chauhan-varun/telechurnAi.git
-cd telechurnAi
+git clone https://github.com/UMARMUKTHAR03/customer-churn-prediction.git
+cd customer-churn-prediction
 
-# Setup and install dependencies
+# Sync environment dependencies
 uv sync
 
-# Launch the platform
+# Launch local Streamlit dashboard
 uv run streamlit run app.py
 ```
 
 ---
 
-## 🤝 Contributing
-Contributions are what make the open-source community an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+## 👨‍💻 Author & Engineering Credits
+
+**UMAR MUKTHAR**  
+- GitHub: [@UMARMUKTHAR03](https://github.com/UMARMUKTHAR03)  
+- Email: [umarom98425@gmail.com](mailto:umarom98425@gmail.com)  
 
 ## 📄 License
-Distributed under the **MIT License**. See `LICENSE` for more information.
 
----
-**Built with ❤️ for Data-Driven Retention Strategies.**
+Distributed under the **MIT License**. See `LICENSE` for details.

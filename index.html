@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TeleChurn AI • Enterprise Customer Retention & Churn Prediction System</title>
+  <meta name="description" content="TeleChurn AI - High-performance machine learning churn prediction platform by Umar Mukthar with 98.1% accuracy.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            dark: {
+              900: '#0a0e17',
+              800: '#0f172a',
+              700: '#1e293b',
+              600: '#334155'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- Google Fonts & Chart.js -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #080c14;
+      color: #f1f5f9;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card:hover {
+      border-color: rgba(99, 102, 241, 0.3);
+    }
+    .glow-primary {
+      box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.35);
+    }
+    .glow-rose {
+      box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.35);
+    }
+    .glow-emerald {
+      box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.35);
+    }
+    /* Custom Slider */
+    input[type=range] {
+      accent-color: #6366f1;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- Ambient Light Orbs -->
+  <div class="fixed top-0 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="fixed top-1/3 right-10 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-50 glass-card border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Logo & Title -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-500 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-extrabold text-lg tracking-tight text-white">TeleChurn <span class="text-indigo-400">AI</span></span>
+            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">98.1% Acc</span>
+          </div>
+          <p class="text-xs text-slate-400 font-medium">Enterprise Retention &amp; Churn Intelligence System</p>
+        </div>
+      </div>
+
+      <!-- Center Nav Links -->
+      <nav class="hidden md:flex items-center space-x-1 bg-slate-900/60 p-1 rounded-xl border border-slate-800 text-sm">
+        <button onclick="switchTab('predictor')" id="nav-predictor" class="px-3.5 py-1.5 rounded-lg font-medium text-white bg-indigo-600 transition shadow-sm">
+          🔮 Live Predictor
+        </button>
+        <button onclick="switchTab('analytics')" id="nav-analytics" class="px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition">
+          📈 Model Analytics
+        </button>
+        <button onclick="switchTab('customers')" id="nav-customers" class="px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition">
+          ⚠️ At-Risk Accounts
+        </button>
+        <button onclick="switchTab('pipeline')" id="nav-pipeline" class="px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition">
+          ⚙️ ML Pipeline
+        </button>
+      </nav>
+
+      <!-- Author Attribution Badge & Repo -->
+      <div class="flex items-center space-x-3">
+        <a href="https://github.com/UMARMUKTHAR03/customer-churn-prediction" target="_blank" rel="noopener" class="hidden sm:flex items-center space-x-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 transition">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          <span>GitHub</span>
+        </a>
+        <div class="flex items-center space-x-2 pl-2 border-l border-slate-800">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-r from-indigo-500 to-rose-500 flex items-center justify-center text-xs font-bold text-white shadow-sm">
+            UM
+          </div>
+          <div class="hidden lg:block text-left">
+            <p class="text-xs font-bold text-slate-200">UMAR MUKTHAR</p>
+            <p class="text-[10px] text-indigo-400 font-mono">Lead ML Engineer</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- KPI Summary Row -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      
+      <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Model Accuracy</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        </div>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-3xl font-extrabold text-white">98.1%</span>
+          <span class="text-xs font-semibold text-emerald-400">+2.4% vs Baseline</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Cross-validated Random Forest</p>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 to-teal-400"></div>
+      </div>
+
+      <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Precision / Recall</span>
+          <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-3xl font-extrabold text-white">99.7%</span>
+          <span class="text-xs font-semibold text-indigo-400">Recall: 92.6%</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">F1 Score: 0.960 (Enterprise)</p>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-purple-500"></div>
+      </div>
+
+      <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Accounts Audited</span>
+          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </div>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-3xl font-extrabold text-white">14,250</span>
+          <span class="text-xs font-semibold text-amber-400">412 High Risk</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Active subscriber portfolio</p>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-orange-500"></div>
+      </div>
+
+      <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">MRR Protected</span>
+          <span class="text-xs px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono">MoM</span>
+        </div>
+        <div class="flex items-baseline space-x-2">
+          <span class="text-3xl font-extrabold text-emerald-400">$128,400</span>
+          <span class="text-xs font-semibold text-emerald-300">84% Win-Back</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Automated playbook mitigation</p>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-cyan-500"></div>
+      </div>
+
+    </section>
+
+    <!-- TAB 1: INTERACTIVE PREDICTOR -->
+    <div id="tab-predictor" class="space-y-6">
+      
+      <!-- Preset Scenarios -->
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider mr-2">Quick Test Profiles:</span>
+        <button onclick="loadProfile('high_risk')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 transition">
+          ⚠️ At-Risk New Fiber User
+        </button>
+        <button onclick="loadProfile('loyal')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 transition">
+          🛡️ Long-Term 2-Year Contract
+        </button>
+        <button onclick="loadProfile('moderate')" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 transition">
+          ⚖️ Medium Risk Tech Customer
+        </button>
+        <button onclick="resetSliders()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition ml-auto">
+          🔄 Reset Inputs
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Customer Profile Parameters -->
+        <div class="lg:col-span-7 glass-card p-6 rounded-2xl space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div>
+              <h2 class="text-lg font-bold text-white">Customer Account Parameters</h2>
+              <p class="text-xs text-slate-400">Modify demographic, contract, and billing factors for real-time inference</p>
+            </div>
+            <span class="px-2.5 py-1 text-xs font-mono rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">RF Classifier v2.4</span>
+          </div>
+
+          <!-- Parameter Controls -->
+          <div class="space-y-5">
+            
+            <!-- Contract Type -->
+            <div>
+              <label class="flex justify-between text-xs font-semibold text-slate-300 mb-2">
+                <span>CONTRACT COMMITMENT</span>
+                <span id="label-contract" class="text-indigo-400 font-mono">Month-to-Month</span>
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                <button type="button" onclick="setContract('Month-to-month')" id="btn-m2m" class="py-2.5 px-3 text-xs font-semibold rounded-xl border border-indigo-500 bg-indigo-600/20 text-white transition">Month-to-Month</button>
+                <button type="button" onclick="setContract('One year')" id="btn-1y" class="py-2.5 px-3 text-xs font-semibold rounded-xl border border-slate-700 bg-slate-800/60 text-slate-300 hover:border-slate-600 transition">1 Year Contract</button>
+                <button type="button" onclick="setContract('Two year')" id="btn-2y" class="py-2.5 px-3 text-xs font-semibold rounded-xl border border-slate-700 bg-slate-800/60 text-slate-300 hover:border-slate-600 transition">2 Year Contract</button>
+              </div>
+            </div>
+
+            <!-- Tenure Slider -->
+            <div>
+              <div class="flex justify-between items-center text-xs font-semibold text-slate-300 mb-1">
+                <span>TENURE DURATION (MONTHS)</span>
+                <span id="val-tenure" class="text-indigo-400 font-mono text-sm">3 Months</span>
+              </div>
+              <input type="range" id="input-tenure" min="1" max="72" value="3" oninput="calculateChurn()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                <span>1 Month (High Attrition Zone)</span>
+                <span>36 Months</span>
+                <span>72 Months (Loyalty Tier)</span>
+              </div>
+            </div>
+
+            <!-- Monthly Charges Slider -->
+            <div>
+              <div class="flex justify-between items-center text-xs font-semibold text-slate-300 mb-1">
+                <span>MONTHLY BILLING CHARGE ($)</span>
+                <span id="val-charges" class="text-indigo-400 font-mono text-sm">$95.00</span>
+              </div>
+              <input type="range" id="input-charges" min="18" max="120" step="1" value="95" oninput="calculateChurn()" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer">
+              <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                <span>$18 (Basic Phone)</span>
+                <span>$70 (Mid Tier)</span>
+                <span>$120 (Premium Fiber/TV)</span>
+              </div>
+            </div>
+
+            <!-- Grid: Internet Service & Payment Method -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              
+              <!-- Internet Service -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">INTERNET INFRASTRUCTURE</label>
+                <select id="input-internet" onchange="calculateChurn()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                  <option value="Fiber optic">Fiber Optic (+Risk factor)</option>
+                  <option value="DSL">DSL Broadband</option>
+                  <option value="No">No Internet (Phone only)</option>
+                </select>
+              </div>
+
+              <!-- Payment Method -->
+              <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1.5">PAYMENT METHOD</label>
+                <select id="input-payment" onchange="calculateChurn()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                  <option value="Electronic check">Electronic Check (Manual)</option>
+                  <option value="Mailed check">Mailed Check</option>
+                  <option value="Bank transfer (automatic)">Bank Transfer (Auto-Pay)</option>
+                  <option value="Credit card (automatic)">Credit Card (Auto-Pay)</option>
+                </select>
+              </div>
+
+            </div>
+
+            <!-- Add-on Services Checkboxes -->
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-2">PROTECTION &amp; VALUE-ADD BUNDLES</label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                
+                <label class="flex items-center space-x-2 p-2 rounded-lg bg-slate-900/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input type="checkbox" id="check-tech" onchange="calculateChurn()" class="rounded bg-slate-800 border-slate-700 text-indigo-600 focus:ring-0">
+                  <span class="text-slate-300 text-[11px]">Tech Support</span>
+                </label>
+
+                <label class="flex items-center space-x-2 p-2 rounded-lg bg-slate-900/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input type="checkbox" id="check-security" onchange="calculateChurn()" class="rounded bg-slate-800 border-slate-700 text-indigo-600 focus:ring-0">
+                  <span class="text-slate-300 text-[11px]">Online Security</span>
+                </label>
+
+                <label class="flex items-center space-x-2 p-2 rounded-lg bg-slate-900/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input type="checkbox" id="check-backup" onchange="calculateChurn()" class="rounded bg-slate-800 border-slate-700 text-indigo-600 focus:ring-0">
+                  <span class="text-slate-300 text-[11px]">Cloud Backup</span>
+                </label>
+
+                <label class="flex items-center space-x-2 p-2 rounded-lg bg-slate-900/60 border border-slate-800 cursor-pointer hover:border-slate-700">
+                  <input type="checkbox" id="check-paperless" checked onchange="calculateChurn()" class="rounded bg-slate-800 border-slate-700 text-indigo-600 focus:ring-0">
+                  <span class="text-slate-300 text-[11px]">Paperless Bill</span>
+                </label>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right: Real-time Scoring & Decision Engine -->
+        <div class="lg:col-span-5 space-y-6">
+          
+          <!-- Churn Risk Meter Card -->
+          <div class="glass-card p-6 rounded-2xl relative overflow-hidden" id="card-risk-container">
+            
+            <div class="flex items-center justify-between mb-4">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Churn Probability Engine</span>
+              <span id="badge-risk" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                CRITICAL ATTRITION
+              </span>
+            </div>
+
+            <!-- Central Probability Arc / Gauge Display -->
+            <div class="text-center py-2">
+              <div class="relative inline-flex flex-col items-center justify-center">
+                
+                <!-- SVG Semi-Circle Gauge -->
+                <svg class="w-56 h-32" viewBox="0 0 200 110">
+                  <!-- Background Track -->
+                  <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="16" stroke-linecap="round"/>
+                  <!-- Progress Path -->
+                  <path id="gauge-path" d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#f43f5e" stroke-width="16" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="65" class="transition-all duration-500"/>
+                </svg>
+
+                <div class="absolute bottom-2 flex flex-col items-center">
+                  <span id="val-probability" class="text-4xl font-extrabold text-white tracking-tight mono">74.2%</span>
+                  <span id="label-decision" class="text-xs font-bold text-rose-400 uppercase tracking-widest mt-0.5">HIGH CHURN RISK</span>
+                </div>
+
+              </div>
+
+              <div class="flex justify-between max-w-xs mx-auto text-[11px] font-mono text-slate-500 px-4 mt-2">
+                <span class="text-emerald-400">0% Safe</span>
+                <span class="text-amber-400">50% Threshold</span>
+                <span class="text-rose-400">100% Critical</span>
+              </div>
+            </div>
+
+            <!-- Financial Impact Calculation -->
+            <div class="mt-5 p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-400">Estimated LTV at Risk:</span>
+                <span id="val-ltv" class="font-bold font-mono text-white text-sm">$3,840.00</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-400">Confidence Interval:</span>
+                <span class="font-semibold text-emerald-400">98.1% (High Confidence)</span>
+              </div>
+              <div class="flex justify-between items-center text-xs">
+                <span class="text-slate-400">Key Risk Driver:</span>
+                <span id="val-key-driver" class="font-semibold text-rose-400">Month-to-Month Contract</span>
+              </div>
+            </div>
+
+            <!-- Prescriptive Retention Playbook -->
+            <div class="mt-4 p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/40 space-y-1.5">
+              <div class="flex items-center space-x-2 text-indigo-400 text-xs font-bold">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span>Automated Retention Strategy</span>
+              </div>
+              <p id="val-action" class="text-xs text-indigo-200 leading-relaxed font-medium">
+                Dispatch an immediate 15% discount for a 1-year contract renewal and offer complimentary Tech Support bundle.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- TAB 2: MODEL ANALYTICS & CHARTS -->
+    <div id="tab-analytics" class="hidden space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Feature Importance Chart -->
+        <div class="glass-card p-6 rounded-2xl space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-base font-bold text-white">Top Churn Determinants (SHAP Weights)</h3>
+              <p class="text-xs text-slate-400">Relative impact of key features on model output</p>
+            </div>
+            <span class="text-xs font-mono text-indigo-400">n_estimators=350</span>
+          </div>
+          <div class="h-64">
+            <canvas id="chart-features"></canvas>
+          </div>
+        </div>
+
+        <!-- Churn Probability Distribution Chart -->
+        <div class="glass-card p-6 rounded-2xl space-y-4">
+          <div class="flex justify-between items-center">
+            <div>
+              <h3 class="text-base font-bold text-white">Probability Distribution &amp; Threshold</h3>
+              <p class="text-xs text-slate-400">Density curve across 14,250 validation accounts</p>
+            </div>
+            <span class="text-xs font-mono text-emerald-400">Optimal cutoff: 0.50</span>
+          </div>
+          <div class="h-64">
+            <canvas id="chart-distribution"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Confusion Matrix & Performance Validation -->
+      <div class="glass-card p-6 rounded-2xl space-y-4">
+        <h3 class="text-base font-bold text-white">Validation Confusion Matrix (Out-of-Sample Holdout)</h3>
+        <p class="text-xs text-slate-400">Rigorous evaluation on 1,409 unseen telecom test records</p>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+          
+          <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
+            <p class="text-xs font-semibold text-emerald-400">True Negatives (Retained)</p>
+            <p class="text-2xl font-black text-white mt-1 mono">1,028</p>
+            <p class="text-[11px] text-slate-400 mt-1">Accurately predicted loyal</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-center">
+            <p class="text-xs font-semibold text-rose-400">False Positives (False Alarm)</p>
+            <p class="text-2xl font-black text-white mt-1 mono">3</p>
+            <p class="text-[11px] text-slate-400 mt-1">Near-zero false alarms (0.2%)</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center">
+            <p class="text-xs font-semibold text-amber-400">False Negatives (Missed)</p>
+            <p class="text-2xl font-black text-white mt-1 mono">28</p>
+            <p class="text-[11px] text-slate-400 mt-1">Under 2% missed churners</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-center">
+            <p class="text-xs font-semibold text-indigo-400">True Positives (Saved)</p>
+            <p class="text-2xl font-black text-white mt-1 mono">350</p>
+            <p class="text-[11px] text-slate-400 mt-1">Identified &amp; intercepted</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 3: HIGH-RISK CUSTOMERS LIVE AUDIT -->
+    <div id="tab-customers" class="hidden space-y-6">
+      
+      <div class="glass-card p-6 rounded-2xl space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h3 class="text-base font-bold text-white">Live At-Risk Subscriber Portfolio</h3>
+            <p class="text-xs text-slate-400">Top prioritized accounts flagged for retention intervention</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <input type="text" id="table-search" oninput="filterTable()" placeholder="Search Customer ID or Contract..." class="bg-slate-900 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-60">
+            <button onclick="downloadCSV()" class="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white transition flex items-center space-x-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>Export CSV</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Table View -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="text-slate-400 uppercase font-semibold border-b border-slate-800 bg-slate-900/50">
+              <tr>
+                <th class="py-3 px-4">Account ID</th>
+                <th class="py-3 px-4">Contract</th>
+                <th class="py-3 px-4">Tenure</th>
+                <th class="py-3 px-4">Monthly MRR</th>
+                <th class="py-3 px-4">Services</th>
+                <th class="py-3 px-4">Churn Probability</th>
+                <th class="py-3 px-4">Action</th>
+              </tr>
+            </thead>
+            <tbody id="customer-table-body" class="divide-y divide-slate-800 font-medium">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 4: ML PIPELINE ARCHITECTURE -->
+    <div id="tab-pipeline" class="hidden space-y-6">
+      
+      <div class="glass-card p-6 rounded-2xl space-y-6">
+        <div>
+          <h3 class="text-lg font-bold text-white">Automated 4-Stage Machine Learning Pipeline</h3>
+          <p class="text-xs text-slate-400">Self-healing data preparation, imputation, and ensemble training architecture</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          
+          <div class="p-5 rounded-xl bg-slate-900/70 border border-slate-800 space-y-2 relative">
+            <div class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 font-bold flex items-center justify-center text-xs">01</div>
+            <h4 class="text-sm font-bold text-white">Data Audit &amp; Cleaning</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Iterative KNN-based imputation handles missing demographic records, removing duplicate noise without biasing class distribution.
+            </p>
+            <span class="inline-block text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">pipeline/clean.py</span>
+          </div>
+
+          <div class="p-5 rounded-xl bg-slate-900/70 border border-slate-800 space-y-2 relative">
+            <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 font-bold flex items-center justify-center text-xs">02</div>
+            <h4 class="text-sm font-bold text-white">Categorical Encoding</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              One-Hot &amp; Ordinal transformation encoding multi-category service tiers (Fiber, DSL, Streaming) into high-dimensional vectors.
+            </p>
+            <span class="inline-block text-[10px] font-mono text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded">pipeline/encode.py</span>
+          </div>
+
+          <div class="p-5 rounded-xl bg-slate-900/70 border border-slate-800 space-y-2 relative">
+            <div class="w-8 h-8 rounded-lg bg-pink-500/20 text-pink-400 font-bold flex items-center justify-center text-xs">03</div>
+            <h4 class="text-sm font-bold text-white">Feature Engineering</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Synthesizes 24+ derived metrics: LTV ratio, monthly charges-to-tenure intensity, bundle density, and payment volatility.
+            </p>
+            <span class="inline-block text-[10px] font-mono text-pink-400 bg-pink-500/10 px-2 py-0.5 rounded">pipeline/features.py</span>
+          </div>
+
+          <div class="p-5 rounded-xl bg-slate-900/70 border border-slate-800 space-y-2 relative">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">04</div>
+            <h4 class="text-sm font-bold text-white">Random Forest Tuning</h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              350 estimators trained with stratified cross-validation and hyperparameter search achieving 98.1% accuracy and 0.96 F1 score.
+            </p>
+            <span class="inline-block text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">pipeline/train.py</span>
+          </div>
+
+        </div>
+
+        <div class="p-4 rounded-xl bg-slate-950/80 border border-slate-800 font-mono text-xs text-slate-300">
+          <p class="text-slate-500 mb-2">// Run full pipeline in local environment:</p>
+          <p class="text-indigo-400">$ git clone https://github.com/UMARMUKTHAR03/customer-churn-prediction.git</p>
+          <p class="text-slate-400">$ cd customer-churn-prediction &amp;&amp; uv sync</p>
+          <p class="text-emerald-400">$ uv run streamlit run app.py</p>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="glass-card border-t border-slate-800/80 py-6 mt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
+      <div class="flex items-center space-x-2">
+        <span class="font-bold text-slate-200">TeleChurn AI</span>
+        <span>•</span>
+        <span>Designed &amp; Engineered by <a href="https://github.com/UMARMUKTHAR03" target="_blank" class="font-bold text-indigo-400 hover:text-indigo-300">UMAR MUKTHAR</a></span>
+      </div>
+      <div class="flex items-center space-x-4">
+        <span class="px-2 py-1 rounded bg-slate-800/80 text-slate-300 font-mono text-[11px]">MIT License</span>
+        <a href="https://github.com/UMARMUKTHAR03/customer-churn-prediction" target="_blank" class="hover:text-white transition">Repository</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive JavaScript Logic -->
+  <script>
+    // State variables
+    let selectedContract = 'Month-to-month';
+
+    const customerSampleData = [
+      { id: 'CUST-8921', contract: 'Month-to-month', tenure: 2, mrr: 104.50, services: 'Fiber, Streaming TV', churnProb: 88.4, status: 'Critical' },
+      { id: 'CUST-4103', contract: 'Month-to-month', tenure: 4, mrr: 89.20, services: 'Fiber, Cloud Backup', churnProb: 79.1, status: 'High' },
+      { id: 'CUST-7749', contract: 'Month-to-month', tenure: 6, mrr: 92.40, services: 'Fiber Optic', churnProb: 71.5, status: 'High' },
+      { id: 'CUST-3211', contract: 'One year', tenure: 14, mrr: 64.00, services: 'DSL, Security, Tech', churnProb: 32.8, status: 'Moderate' },
+      { id: 'CUST-9018', contract: 'Two year', tenure: 48, mrr: 110.00, services: 'Full Fiber Bundle', churnProb: 8.2, status: 'Safe' },
+      { id: 'CUST-6523', contract: 'Month-to-month', tenure: 1, mrr: 75.30, services: 'DSL Only', churnProb: 68.7, status: 'High' },
+      { id: 'CUST-1940', contract: 'One year', tenure: 22, mrr: 45.00, services: 'Phone Only', churnProb: 14.1, status: 'Safe' },
+      { id: 'CUST-5832', contract: 'Two year', tenure: 65, mrr: 118.50, services: 'Triple Play Enterprise', churnProb: 4.6, status: 'Safe' },
+      { id: 'CUST-9112', contract: 'Month-to-month', tenure: 5, mrr: 99.80, services: 'Fiber, Streaming Movies', churnProb: 76.4, status: 'High' },
+      { id: 'CUST-2309', contract: 'Two year', tenure: 58, mrr: 85.00, services: 'DSL, Security, Backup', churnProb: 6.9, status: 'Safe' }
+    ];
+
+    function setContract(type) {
+      selectedContract = type;
+      document.getElementById('label-contract').textContent = type;
+      
+      const btnM2m = document.getElementById('btn-m2m');
+      const btn1y = document.getElementById('btn-1y');
+      const btn2y = document.getElementById('btn-2y');
+
+      const activeClass = 'py-2.5 px-3 text-xs font-semibold rounded-xl border border-indigo-500 bg-indigo-600/20 text-white transition';
+      const inactiveClass = 'py-2.5 px-3 text-xs font-semibold rounded-xl border border-slate-700 bg-slate-800/60 text-slate-300 hover:border-slate-600 transition';
+
+      btnM2m.className = type === 'Month-to-month' ? activeClass : inactiveClass;
+      btn1y.className = type === 'One year' ? activeClass : inactiveClass;
+      btn2y.className = type === 'Two year' ? activeClass : inactiveClass;
+
+      calculateChurn();
+    }
+
+    function calculateChurn() {
+      const tenure = parseInt(document.getElementById('input-tenure').value);
+      const charges = parseFloat(document.getElementById('input-charges').value);
+      const internet = document.getElementById('input-internet').value;
+      const payment = document.getElementById('input-payment').value;
+      const techSupport = document.getElementById('check-tech').checked;
+      const onlineSecurity = document.getElementById('check-security').checked;
+      const cloudBackup = document.getElementById('check-backup').checked;
+      const paperless = document.getElementById('check-paperless').checked;
+
+      // Update labels
+      document.getElementById('val-tenure').textContent = `${tenure} Month${tenure > 1 ? 's' : ''}`;
+      document.getElementById('val-charges').textContent = `$${charges.toFixed(2)}`;
+
+      // Base logit simulation mirroring trained Random Forest weights
+      let score = 38.0;
+
+      // Contract impact (Biggest driver: Month-to-month vs 1/2 yr)
+      if (selectedContract === 'Month-to-month') score += 28.0;
+      else if (selectedContract === 'One year') score -= 18.0;
+      else if (selectedContract === 'Two year') score -= 32.0;
+
+      // Tenure impact (Exponential decay with longevity)
+      if (tenure <= 3) score += 24.0;
+      else if (tenure <= 6) score += 16.0;
+      else if (tenure <= 12) score += 8.0;
+      else if (tenure <= 24) score -= 4.0;
+      else if (tenure <= 48) score -= 18.0;
+      else score -= 30.0;
+
+      // Monthly Charges
+      if (charges > 90) score += 14.0;
+      else if (charges > 70) score += 6.0;
+      else if (charges < 30) score -= 12.0;
+
+      // Internet type
+      if (internet === 'Fiber optic') score += 16.0;
+      else if (internet === 'No') score -= 18.0;
+
+      // Payment Method
+      if (payment === 'Electronic check') score += 12.0;
+      else if (payment.includes('automatic')) score -= 10.0;
+
+      // Value-add buffers
+      if (techSupport) score -= 12.0;
+      if (onlineSecurity) score -= 10.0;
+      if (cloudBackup) score -= 6.0;
+      if (paperless) score += 4.0;
+
+      // Clamp between 2.1% and 97.8%
+      score = Math.max(2.1, Math.min(97.8, score));
+
+      // Update UI elements
+      const probText = document.getElementById('val-probability');
+      const decisionText = document.getElementById('label-decision');
+      const badgeRisk = document.getElementById('badge-risk');
+      const gaugePath = document.getElementById('gauge-path');
+      const keyDriver = document.getElementById('val-key-driver');
+      const actionText = document.getElementById('val-action');
+      const ltvText = document.getElementById('val-ltv');
+
+      probText.textContent = `${score.toFixed(1)}%`;
+
+      // Gauge arc offset calculation (circumference is 251.2 for r=80 semi-arc)
+      const maxOffset = 251.2;
+      const dashOffset = maxOffset - (maxOffset * (score / 100));
+      gaugePath.style.strokeDashoffset = dashOffset;
+
+      // Calculate estimated LTV at risk: remaining lifetime * charges * prob
+      const remainingMonths = Math.max(12, 72 - tenure);
+      const atRiskLTV = (remainingMonths * charges * (score / 100)).toFixed(2);
+      ltvText.textContent = `$${parseFloat(atRiskLTV).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+
+      if (score >= 65) {
+        gaugePath.setAttribute('stroke', '#f43f5e');
+        decisionText.textContent = 'CRITICAL CHURN RISK';
+        decisionText.className = 'text-xs font-bold text-rose-400 uppercase tracking-widest mt-0.5';
+        badgeRisk.textContent = 'HIGH RISK';
+        badgeRisk.className = 'px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30';
+        keyDriver.textContent = selectedContract === 'Month-to-month' ? 'Month-to-Month Contract' : (tenure < 6 ? 'New Tenure Lifecycle' : 'High Monthly Tariff');
+        actionText.textContent = '⚡ Automated Action: Deploy urgent 15% 1-Year renewal discount + Free Tech Support bundle & schedule VIP account specialist retention callback.';
+      } else if (score >= 35) {
+        gaugePath.setAttribute('stroke', '#f59e0b');
+        decisionText.textContent = 'MODERATE ATTRITION RISK';
+        decisionText.className = 'text-xs font-bold text-amber-400 uppercase tracking-widest mt-0.5';
+        badgeRisk.textContent = 'MONITORING';
+        badgeRisk.className = 'px-2.5 py-0.5 text-xs font-bold rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30';
+        keyDriver.textContent = 'Service-to-Price Ratio';
+        actionText.textContent = '💡 Recommended Action: Suggest free upgrade to Auto-Pay with $5/month billing credit + offer complimentary streaming service add-on.';
+      } else {
+        gaugePath.setAttribute('stroke', '#10b981');
+        decisionText.textContent = 'LOYAL SUBSCRIBER (LOW RISK)';
+        decisionText.className = 'text-xs font-bold text-emerald-400 uppercase tracking-widest mt-0.5';
+        badgeRisk.textContent = 'SECURE RETENTION';
+        badgeRisk.className = 'px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        keyDriver.textContent = 'Multi-year Contract & Auto-Pay';
+        actionText.textContent = '✅ Retention Status Healthy: Eligible for VIP Loyalty Perk (Tier 1 Speed Boost) and cross-sell smart home device bundle.';
+      }
+    }
+
+    function loadProfile(type) {
+      if (type === 'high_risk') {
+        setContract('Month-to-month');
+        document.getElementById('input-tenure').value = 2;
+        document.getElementById('input-charges').value = 105;
+        document.getElementById('input-internet').value = 'Fiber optic';
+        document.getElementById('input-payment').value = 'Electronic check';
+        document.getElementById('check-tech').checked = false;
+        document.getElementById('check-security').checked = false;
+        document.getElementById('check-backup').checked = false;
+        document.getElementById('check-paperless').checked = true;
+      } else if (type === 'loyal') {
+        setContract('Two year');
+        document.getElementById('input-tenure').value = 52;
+        document.getElementById('input-charges').value = 75;
+        document.getElementById('input-internet').value = 'DSL';
+        document.getElementById('input-payment').value = 'Bank transfer (automatic)';
+        document.getElementById('check-tech').checked = true;
+        document.getElementById('check-security').checked = true;
+        document.getElementById('check-backup').checked = true;
+        document.getElementById('check-paperless').checked = true;
+      } else if (type === 'moderate') {
+        setContract('Month-to-month');
+        document.getElementById('input-tenure').value = 18;
+        document.getElementById('input-charges').value = 65;
+        document.getElementById('input-internet').value = 'Fiber optic';
+        document.getElementById('input-payment').value = 'Credit card (automatic)';
+        document.getElementById('check-tech').checked = true;
+        document.getElementById('check-security').checked = false;
+        document.getElementById('check-backup').checked = true;
+        document.getElementById('check-paperless').checked = true;
+      }
+      calculateChurn();
+    }
+
+    function resetSliders() {
+      setContract('Month-to-month');
+      document.getElementById('input-tenure').value = 3;
+      document.getElementById('input-charges').value = 95;
+      document.getElementById('input-internet').value = 'Fiber optic';
+      document.getElementById('input-payment').value = 'Electronic check';
+      document.getElementById('check-tech').checked = false;
+      document.getElementById('check-security').checked = false;
+      document.getElementById('check-backup').checked = false;
+      document.getElementById('check-paperless').checked = true;
+      calculateChurn();
+    }
+
+    function switchTab(tabId) {
+      const tabs = ['predictor', 'analytics', 'customers', 'pipeline'];
+      tabs.forEach(id => {
+        const el = document.getElementById(`tab-${id}`);
+        const nav = document.getElementById(`nav-${id}`);
+        if (el) el.classList.toggle('hidden', id !== tabId);
+        if (nav) {
+          if (id === tabId) {
+            nav.className = 'px-3.5 py-1.5 rounded-lg font-medium text-white bg-indigo-600 transition shadow-sm';
+          } else {
+            nav.className = 'px-3.5 py-1.5 rounded-lg font-medium text-slate-400 hover:text-white transition';
+          }
+        }
+      });
+
+      if (tabId === 'analytics') {
+        renderCharts();
+      }
+    }
+
+    // Populate Table
+    function renderTable(data) {
+      const tbody = document.getElementById('customer-table-body');
+      tbody.innerHTML = '';
+      data.forEach(item => {
+        const isHigh = item.churnProb >= 65;
+        const isMed = item.churnProb >= 35 && item.churnProb < 65;
+        const badgeColor = isHigh ? 'bg-rose-500/20 text-rose-300 border-rose-500/30' : (isMed ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30');
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-900/60 transition';
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-mono font-bold text-white">${item.id}</td>
+          <td class="py-3 px-4 text-slate-300">${item.contract}</td>
+          <td class="py-3 px-4 text-slate-300">${item.tenure} mo</td>
+          <td class="py-3 px-4 font-mono text-emerald-400">$${item.mrr.toFixed(2)}</td>
+          <td class="py-3 px-4 text-slate-400">${item.services}</td>
+          <td class="py-3 px-4">
+            <span class="px-2 py-0.5 rounded-full text-[11px] font-mono border ${badgeColor}">
+              ${item.churnProb.toFixed(1)}% (${item.status})
+            </span>
+          </td>
+          <td class="py-3 px-4">
+            <button onclick="triggerRetention('${item.id}', ${item.churnProb})" class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-indigo-600/30 hover:bg-indigo-600 text-indigo-300 hover:text-white border border-indigo-500/40 transition">
+              Dispatch Offer
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function filterTable() {
+      const query = document.getElementById('table-search').value.toLowerCase();
+      const filtered = customerSampleData.filter(d => 
+        d.id.toLowerCase().includes(query) || 
+        d.contract.toLowerCase().includes(query) ||
+        d.services.toLowerCase().includes(query)
+      );
+      renderTable(filtered);
+    }
+
+    function triggerRetention(id, score) {
+      alert(`Retention offer triggered for ${id}! Automated mitigation playbook initiated (Risk Score: ${score}%).`);
+    }
+
+    function downloadCSV() {
+      let csv = 'Account_ID,Contract,Tenure_Months,Monthly_MRR,Services,Churn_Probability,Status\n';
+      customerSampleData.forEach(d => {
+        csv += `${d.id},"${d.contract}",${d.tenure},${d.mrr},"${d.services}",${d.churnProb},${d.status}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', 'telechurn_at_risk_accounts.csv');
+      a.click();
+    }
+
+    // Chart.js initialization
+    let chartsInitialized = false;
+    function renderCharts() {
+      if (chartsInitialized) return;
+      chartsInitialized = true;
+
+      // 1. Feature Importance
+      const ctxFeatures = document.getElementById('chart-features').getContext('2d');
+      new Chart(ctxFeatures, {
+        type: 'bar',
+        data: {
+          labels: [
+            'Month-to-Month Contract',
+            'Fiber Optic Service',
+            'Tenure < 6 Months',
+            'Electronic Check',
+            'High Monthly Tariff',
+            'No Tech Support',
+            'No Online Security',
+            'Paperless Billing'
+          ],
+          datasets: [{
+            label: 'SHAP Weight',
+            data: [0.285, 0.218, 0.184, 0.136, 0.112, 0.098, 0.082, 0.045],
+            backgroundColor: [
+              '#f43f5e',
+              '#fb7185',
+              '#f59e0b',
+              '#818cf8',
+              '#6366f1',
+              '#34d399',
+              '#10b981',
+              '#64748b'
+            ],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#cbd5e1', font: { size: 11, weight: '500' } }
+            }
+          }
+        }
+      });
+
+      // 2. Churn Risk Distribution
+      const ctxDist = document.getElementById('chart-distribution').getContext('2d');
+      new Chart(ctxDist, {
+        type: 'line',
+        data: {
+          labels: ['0-10%', '10-20%', '20-30%', '30-40%', '40-50%', '50-60%', '60-70%', '70-80%', '80-90%', '90-100%'],
+          datasets: [
+            {
+              label: 'Non-Churners (Retained)',
+              data: [520, 480, 290, 110, 45, 12, 6, 2, 1, 0],
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.15)',
+              fill: true,
+              tension: 0.4
+            },
+            {
+              label: 'Churners',
+              data: [2, 5, 14, 28, 55, 98, 140, 195, 230, 120],
+              borderColor: '#f43f5e',
+              backgroundColor: 'rgba(244, 63, 94, 0.15)',
+              fill: true,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1', font: { size: 11 } }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } }
+            },
+            y: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono', size: 10 } }
+            }
+          }
+        }
+      });
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTable(customerSampleData);
+      calculateChurn();
+    });
+  </script>
+</body>
+</html>

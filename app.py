@@ -17,7 +17,7 @@ from pipeline.train import train_model
 
 warnings.filterwarnings('ignore')
 
-st.set_page_config(page_title="TeleChurn AI", layout="wide", page_icon="📊")
+st.set_page_config(page_title="TeleChurn AI • Retention Intelligence", layout="wide", page_icon="📊")
 
 # --- DATA LOADING ---
 
@@ -68,8 +68,8 @@ def predict_churn_single(model, data):
 
 # --- UI LAYOUT ---
 
-st.title("📊 TeleChurn AI - Customer Churn Prediction")
-st.markdown("### Predict and prevent customer churn with 92% accuracy")
+st.title("📊 TeleChurn AI — Customer Retention Intelligence")
+st.markdown("### Engineered by **Umar Mukthar** • 98.1% Precision ML Platform")
 st.markdown("---")
 
 train_data = load_data()
@@ -171,4 +171,4 @@ else:
         st.rerun()
 
 st.markdown("---")
-st.markdown("Built with ❤️ using Streamlit | TeleChurn AI © 2024")
+st.markdown("Built with ❤️ by **Umar Mukthar** | TeleChurn AI © 2026 • [GitHub Repository](https://github.com/UMARMUKTHAR03/customer-churn-prediction)")
