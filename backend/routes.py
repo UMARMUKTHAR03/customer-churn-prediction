@@ -355,7 +355,12 @@ def predict_batch():
                 return jsonify({'error': f"Failed to parse CSV file: {str(parse_err)}"}), 400
         elif request.is_json:
             json_body = request.get_json()
-            customer_list = json_body.get('customers', json_body if isinstance(json_body, list) else [])
+            if isinstance(json_body, list):
+                customer_list = json_body
+            elif isinstance(json_body, dict):
+                customer_list = json_body.get('customers', [json_body] if json_body else [])
+            else:
+                customer_list = []
             if not customer_list:
                 return jsonify({'error': 'No customer records provided in JSON payload.'}), 400
             df = pd.DataFrame(customer_list)
