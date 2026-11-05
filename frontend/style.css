@@ -1,0 +1,61 @@
+/* TeleChurn AI Custom Styles */
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #080c14;
+  color: #f1f5f9;
+}
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+.glass-card {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.glass-card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+}
+.glow-primary {
+  box-shadow: 0 0 25px -5px rgba(99, 102, 241, 0.35);
+}
+.glow-rose {
+  box-shadow: 0 0 25px -5px rgba(244, 63, 94, 0.35);
+}
+.glow-emerald {
+  box-shadow: 0 0 25px -5px rgba(16, 185, 129, 0.35);
+}
+input[type=range] {
+  accent-color: #6366f1;
+}
+.tooltip-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+.tooltip-box {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1e293b;
+  color: #cbd5e1;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 50;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.2s, visibility 0.2s;
+}
+.tooltip-container:hover .tooltip-box {
+  visibility: visible;
+  opacity: 1;
+}
+#toast-notification {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+
