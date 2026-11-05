@@ -1,29 +1,48 @@
-import pandas as pd
-from sklearn.preprocessing import LabelEncoder
+"""
+Categorical Encoding Module
+Transforms categorical contract, payment, and temporal attributes into dummy indicators.
+"""
 
-def encode_features(input_path, output_path):
-    df = pd.read_csv(input_path)
+import pandas as pd
+import numpy as np
+
+def encode_features(input_path, output_path=None):
+    """
+    Encodes categorical features deterministically for data pipeline persistence.
+    """
+    df = pd.read_csv(input_path) if isinstance(input_path, str) else input_path.copy()
     
+    # Contract type encoding
+    contract_cats = ['1-year', '2-year', 'Month-to-month']
+    for cat in contract_cats:
+        df[f'contract_{cat}'] = (df.get('contract_type', '') == cat).astype(int)
     if 'contract_type' in df.columns:
-        contract_dummies = pd.get_dummies(df['contract_type'], prefix='contract', drop_first=False)
-        df = pd.concat([df, contract_dummies], axis=1)
         df.drop('contract_type', axis=1, inplace=True)
-    
+        
+    # Payment method encoding
+    payment_cats = ['Bank transfer', 'Credit card', 'Electronic check', 'Mailed check']
+    for cat in payment_cats:
+        df[f'payment_{cat}'] = (df.get('payment_method', '') == cat).astype(int)
     if 'payment_method' in df.columns:
-        payment_dummies = pd.get_dummies(df['payment_method'], prefix='payment', drop_first=False)
-        df = pd.concat([df, payment_dummies], axis=1)
         df.drop('payment_method', axis=1, inplace=True)
-    
+        
+    # Zip code encoding
     if 'zip_code' in df.columns:
-        le_zip = LabelEncoder()
-        df['zip_code_encoded'] = le_zip.fit_transform(df['zip_code'].astype(int))
+        df['zip_code_encoded'] = pd.to_numeric(df['zip_code'], errors='coerce').fillna(500).astype(int)
         df.drop('zip_code', axis=1, inplace=True)
-    
+        
+    # Signup month encoding
+    signup_m = pd.to_numeric(df.get('signup_month', 6), errors='coerce').fillna(6).astype(int)
+    for m in range(1, 13):
+        df[f'month_{m}'] = (signup_m == m).astype(int)
     if 'signup_month' in df.columns:
-        df['signup_month'] = df['signup_month'].astype(int)
-        month_dummies = pd.get_dummies(df['signup_month'], prefix='month', drop_first=False)
-        df = pd.concat([df, month_dummies], axis=1)
         df.drop('signup_month', axis=1, inplace=True)
-    
-    df.to_csv(output_path, index=False)
+        
+    if output_path:
+        df.to_csv(output_path, index=False)
+        
     return df
+
+if __name__ == '__main__':
+    encode_features('data/processed/telecom_churn_train_cleaned.csv', 'data/processed/telecom_churn_train_encoded.csv')
+    print("Encoding complete.")
