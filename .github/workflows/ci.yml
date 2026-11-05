@@ -36,5 +36,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=15 --max-line-length=127 --statistics --exclude=.git,__pycache__,.pytest_cache
 
     - name: Test with pytest
+      env:
+        PYTHONPATH: .
       run: |
-        pytest tests/ -v
+        python -m pytest tests/ -v

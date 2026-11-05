@@ -480,6 +480,21 @@
           <!-- Churn Risk Meter Card -->
           <div class="glass-card p-6 rounded-2xl relative overflow-hidden" id="card-risk-container">
             
+            <!-- API Error Notice Banner (when offline) -->
+            <div id="api-error-notice" class="hidden mb-4 p-3.5 rounded-xl bg-rose-950/50 border border-rose-500/30 text-rose-200">
+              <div class="flex items-start gap-2.5">
+                <span class="text-base mt-0.5">⚠️</span>
+                <div class="flex-1">
+                  <h4 class="font-bold text-xs text-rose-300">Backend API Connection Offline</h4>
+                  <p id="api-error-msg" class="text-[11px] text-rose-300/80 mt-0.5">Live ML predictions require connection to the ChurnIQ Flask backend server. Simulated fallbacks are disabled to protect data integrity.</p>
+                  <div class="mt-2 flex gap-2">
+                    <button onclick="openApiModal()" class="px-2 py-1 bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 rounded text-[11px] text-rose-200 font-semibold transition">Configure API URL</button>
+                    <button onclick="executePrediction(true)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded text-[11px] text-slate-300 transition">Retry</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
             <div class="flex items-center justify-between mb-4">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-400">ChurnIQ Prediction Engine</span>
               <span id="badge-risk" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30">
@@ -958,6 +973,17 @@
           </div>
 
         </div>
+
+        <!-- Methodology & Assumptions Notice -->
+        <div class="p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-xs text-indigo-300 space-y-1">
+          <div class="flex items-center gap-2 font-bold text-indigo-200">
+            <span>ℹ️</span>
+            <span>Scenario Estimation Notice & Assumptions</span>
+          </div>
+          <p class="text-[11px] text-indigo-300/80 leading-relaxed">
+            The What-If Simulator applies empirical sensitivity weights derived from our feature attribution analysis to estimate directional risk impact under hypothetical contract, pricing, and support interventions. This serves as a real-time decision-support tool and is mathematically distinct from full ML model re-inference.
+          </p>
+        </div>
       </div>
 
     </div>
@@ -1217,6 +1243,22 @@
       container.classList.remove('translate-y-0', 'opacity-100');
     }
 
+    function showApiErrorNotice(customMsg) {
+      const banner = document.getElementById('api-error-notice');
+      if (banner) {
+        banner.classList.remove('hidden');
+        if (customMsg) {
+          const msgEl = document.getElementById('api-error-msg');
+          if (msgEl) msgEl.textContent = customMsg;
+        }
+      }
+    }
+
+    function hideApiErrorNotice() {
+      const banner = document.getElementById('api-error-notice');
+      if (banner) banner.classList.add('hidden');
+    }
+
     // Contract Selection
     function setContract(type) {
       selectedContract = type;
@@ -1382,52 +1424,51 @@
       try {
         let result = null;
 
-        // Attempt live Flask REST API call if online
-        if (isApiConnected) {
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3500);
+        // Attempt live Flask REST API call
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-            const res = await fetch(`${API_BASE_URL}/predict`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload),
-              signal: controller.signal
-            });
-            clearTimeout(timeoutId);
+          const res = await fetch(`${API_BASE_URL}/predict`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: controller.signal
+          });
+          clearTimeout(timeoutId);
 
-            if (res.ok) {
-              result = await res.json();
-              latencyBadge.textContent = `Server: ${(performance.now() - startTime).toFixed(0)}ms (SHAP Active)`;
-              document.getElementById('shap-method-badge').textContent = 'Genuine SHAP TreeExplainer';
-              document.getElementById('shap-method-badge').className = 'text-[10px] font-mono text-emerald-400 font-bold';
-            }
-          } catch (netErr) {
-            console.warn("Backend API call failed, falling back to client-side engine:", netErr);
-            isApiConnected = false;
-            updateApiStatusBadge(false);
+          if (res.ok) {
+            result = await res.json();
+            isApiConnected = true;
+            updateApiStatusBadge(true);
+            latencyBadge.textContent = `Server: ${(performance.now() - startTime).toFixed(0)}ms (SHAP Active)`;
+            document.getElementById('shap-method-badge').textContent = result.explainability?.method || 'Genuine SHAP TreeExplainer';
+            document.getElementById('shap-method-badge').className = 'text-[10px] font-mono text-emerald-400 font-bold';
+            hideApiErrorNotice();
+          } else {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || `HTTP ${res.status}: Prediction request failed.`);
+          }
+        } catch (netErr) {
+          console.warn("Backend API call failed:", netErr);
+          isApiConnected = false;
+          updateApiStatusBadge(false);
+          if (isManualClick) {
+            showApiErrorNotice(`Backend Offline (${API_BASE_URL}): ChurnIQ requires live machine learning inference. Simulated fallbacks are disabled. Please start the Flask API ('python app.py') or update the API URL in Settings.`);
+            showToast("Backend Offline", `Cannot connect to ${API_BASE_URL}. Start Flask server or configure API settings.`, '⚠️', 'error');
+            return;
           }
         }
 
-        // If backend wasn't reachable or offline, run verified client ML engine
-        if (!result) {
-          result = predictClientSide(payload);
-          latencyBadge.textContent = `Client ML: ${(performance.now() - startTime).toFixed(1)}ms`;
-          document.getElementById('shap-method-badge').textContent = 'Client Decision Weights';
-          document.getElementById('shap-method-badge').className = 'text-[10px] font-mono text-indigo-400';
-          if (isManualClick && !isApiConnected) {
-            showToast("Backend Offline", "Start Flask server at http://127.0.0.1:5000 for live server-side SHAP values.", 'ℹ️');
+        if (result) {
+          currentPrediction = result;
+          updatePredictionUI(result);
+          updateWhatIfBaseline(result);
+
+          if (isManualClick) {
+            showToast("Prediction Complete", `${result.customer_id}: ${result.churn_probability}% Churn Risk (${result.risk_level})`, '🎯', 'success');
           }
         }
-
-        currentPrediction = result;
-        updatePredictionUI(result);
-        updateWhatIfBaseline(result);
-
-        if (isManualClick) {
-          showToast("Prediction Complete", `${result.customer_id}: ${result.churn_probability}% Churn Risk (${result.risk_level})`, '🎯', 'success');
-        }
-
       } catch (err) {
         console.error("Prediction error:", err);
         showToast("Inference Error", err.message, '⚠️', 'error');
@@ -1654,6 +1695,10 @@
         }
       });
 
+      if (window.location.hash !== `#${tabId}`) {
+        window.history.replaceState(null, null, `#${tabId}`);
+      }
+
       if (tabId === 'analytics') {
         refreshAnalytics();
       } else if (tabId === 'history') {
@@ -1662,6 +1707,15 @@
         updateWhatIfSim();
       }
     }
+
+    function checkHashRoute() {
+      const hash = window.location.hash.replace('#', '').trim();
+      if (['predictor', 'analytics', 'customers', 'bulk', 'whatif', 'pipeline', 'history'].includes(hash)) {
+        switchTab(hash);
+      }
+    }
+    window.addEventListener('hashchange', checkHashRoute);
+    window.addEventListener('DOMContentLoaded', checkHashRoute);
 
     // PDF Report Export (jsPDF Integration)
     function downloadPDFReport() {
@@ -1712,10 +1766,32 @@
 
         // Prescribed Playbook
         doc.setFontSize(14);
-        doc.text("Prescribed Retention Actions", 14, 154);
+        doc.text("Prescribed Retention Actions", 14, 150);
         doc.setFontSize(10);
         const splitAction = doc.splitTextToSize(ret.action_summary || "Deploy loyalty perk.", 180);
-        doc.text(splitAction, 14, 164);
+        doc.text(splitAction, 14, 158);
+
+        // Explainable AI — SHAP Feature Attributions
+        const exp = currentPrediction.explainability || {};
+        if (exp.top_risk_drivers && exp.top_risk_drivers.length > 0) {
+          doc.setFontSize(14);
+          doc.text("Explainable AI: Key Risk Factors (SHAP TreeExplainer)", 14, 180);
+          doc.setFontSize(10);
+          let yPos = 190;
+          exp.top_risk_drivers.slice(0, 4).forEach((d) => {
+            doc.text(`• ${d.feature.replace(/_/g, ' ')}: +${(d.shap_value || 0).toFixed(4)} impact on churn risk`, 18, yPos);
+            yPos += 7;
+          });
+          if (exp.top_protective_factors && exp.top_protective_factors.length > 0) {
+            yPos += 3;
+            doc.text("Protective Factors (Retention Buffers):", 14, yPos);
+            yPos += 7;
+            exp.top_protective_factors.slice(0, 3).forEach((d) => {
+              doc.text(`• ${d.feature.replace(/_/g, ' ')}: ${(d.shap_value || 0).toFixed(4)} risk mitigation`, 18, yPos);
+              yPos += 7;
+            });
+          }
+        }
 
         // Footer
         doc.setFontSize(9);
@@ -1916,7 +1992,7 @@
       spinner.classList.remove('hidden');
 
       try {
-        // Parse CSV using Papa Parse for maximum reliability
+        // Parse CSV using Papa Parse for robust parsing of quotes, commas, and escapes
         Papa.parse(selectedBulkFile, {
           header: true,
           dynamicTyping: true,
@@ -1924,64 +2000,70 @@
           complete: async function(parsedResult) {
             const customers = parsedResult.data;
             if (!customers || customers.length === 0) {
-              showToast("Empty CSV", "File must contain customer records.", '⚠️', 'error');
+              showToast("Empty CSV", "File must contain at least one customer record.", '⚠️', 'error');
               spinner.classList.add('hidden');
               return;
             }
 
-            let processedData = [];
+            // Column Header Validation
+            const headers = parsedResult.meta?.fields || Object.keys(customers[0] || {});
+            const requiredHeaders = ['contract_type', 'tenure_months', 'monthly_charges'];
+            const missing = requiredHeaders.filter(h => !headers.includes(h));
+            if (missing.length > 0) {
+              showToast("Missing Columns", `CSV missing required fields: ${missing.join(', ')}. Download template for format.`, '⚠️', 'error');
+              spinner.classList.add('hidden');
+              return;
+            }
 
-            // Attempt batch inference via Flask REST API
-            if (isApiConnected) {
-              try {
-                const formData = new FormData();
-                formData.append('file', selectedBulkFile);
-                const res = await fetch(`${API_BASE_URL}/predict-batch`, {
-                  method: 'POST',
-                  body: formData
-                });
-                if (res.ok) {
-                  const resJson = await res.json();
-                  processedData = resJson.predictions || [];
-                }
-              } catch (e) {
-                console.warn("Backend batch failed, using calibrated engine:", e);
+            // Row-level Validation
+            const rowWarnings = [];
+            customers.forEach((row, idx) => {
+              if (row.monthly_charges == null || isNaN(Number(row.monthly_charges)) || Number(row.monthly_charges) < 0) {
+                rowWarnings.push(`Row ${idx + 2}: invalid monthly_charges`);
+              }
+              if (row.tenure_months == null || isNaN(Number(row.tenure_months)) || Number(row.tenure_months) < 0) {
+                rowWarnings.push(`Row ${idx + 2}: invalid tenure_months`);
+              }
+            });
+            if (rowWarnings.length > 0) {
+              console.warn("Row validation warnings:", rowWarnings);
+              if (rowWarnings.length <= 4) {
+                showToast("Data Warnings", rowWarnings.join("; "), 'ℹ️');
+              } else {
+                showToast("Data Warnings", `${rowWarnings.length} rows have missing or invalid values. Imputation will be applied.`, 'ℹ️');
               }
             }
 
-            // Fallback to client-side batch processing
-            if (processedData.length === 0) {
-              customers.forEach((c, idx) => {
-                const payload = {
-                  customer_id: c.customer_id || `CUST-${1000 + idx}`,
-                  tenure_months: parseFloat(c.tenure_months) || 6,
-                  monthly_charges: parseFloat(c.monthly_charges) || 75.0,
-                  contract_type: c.contract_type || 'Month-to-month',
-                  payment_method: c.payment_method || 'Electronic check',
-                  has_tech_support: parseInt(c.has_tech_support) || 0,
-                  has_online_security: parseInt(c.has_online_security) || 0,
-                  has_online_backup: parseInt(c.has_online_backup) || 0,
-                  num_complaints: parseInt(c.num_complaints) || 0,
-                  num_support_calls: parseInt(c.num_support_calls) || 1,
-                  nps_score: parseFloat(c.nps_score) || 7
-                };
-                const pred = predictClientSide(payload);
-                processedData.push({
-                  customer_id: payload.customer_id,
-                  churn_prediction: pred.churn_prediction,
-                  churn_probability: pred.churn_probability,
-                  risk_level: pred.risk_level,
-                  key_driver: pred.retention_strategy.key_driver,
-                  recommended_action: pred.retention_strategy.action_summary,
-                  at_risk_revenue: pred.retention_strategy.at_risk_revenue
-                });
-              });
-            }
+            // Perform Batch Inference via Flask REST API
+            try {
+              const formData = new FormData();
+              formData.append('file', selectedBulkFile);
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => controller.abort(), 15000);
 
-            bulkResults = processedData;
-            displayBulkResults(processedData);
-            showToast("Bulk Processing Complete", `Successfully evaluated ${processedData.length} records.`, '✅', 'success');
-            spinner.classList.add('hidden');
+              const res = await fetch(`${API_BASE_URL}/predict-batch`, {
+                method: 'POST',
+                body: formData,
+                signal: controller.signal
+              });
+              clearTimeout(timeoutId);
+
+              if (res.ok) {
+                const resJson = await res.json();
+                const processedData = resJson.predictions || [];
+                bulkResults = processedData;
+                displayBulkResults(processedData);
+                showToast("Batch Inference Complete", `Evaluated ${resJson.total_processed} customers via Random Forest model.`, '✅', 'success');
+              } else {
+                const errJson = await res.json().catch(() => ({}));
+                throw new Error(errJson.error || `Batch inference failed with HTTP status ${res.status}.`);
+              }
+            } catch (netErr) {
+              console.error("Batch inference error:", netErr);
+              showToast("Backend Offline", `Batch ML inference requires active connection to ${API_BASE_URL}. Ensure Flask server is running.`, '⚠️', 'error');
+            } finally {
+              spinner.classList.add('hidden');
+            }
           },
           error: function(err) {
             console.error("Papa Parse error:", err);

@@ -65,3 +65,21 @@ def test_prediction_consistency(model_and_prep):
     
     assert prob1 == prob2, "Predictions for identical inputs must be strictly consistent."
 
+def test_shap_explainer_artifact(model_and_prep):
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    explainer_path = os.path.join(base_dir, 'models', 'explainer.joblib')
+    assert os.path.exists(explainer_path), "SHAP explainer artifact must exist"
+    explainer = joblib.load(explainer_path)
+    assert explainer is not None
+    model, preprocessor = model_and_prep
+    sample = {
+        'contract_type': 'Month-to-month',
+        'tenure_months': 2.0,
+        'monthly_charges': 110.0,
+        'payment_method': 'Electronic check'
+    }
+    X_trans = preprocessor.transform(pd.DataFrame([sample]))
+    shap_vals = explainer.shap_values(X_trans)
+    assert shap_vals is not None
+
+

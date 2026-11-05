@@ -97,3 +97,30 @@ def test_404_handler(client):
     data = res.get_json()
     assert 'error' in data
 
+def test_shap_in_api(client):
+    res = client.post('/predict', json={
+        'customer_id': 'SHAP-TEST-1',
+        'contract_type': 'Month-to-month',
+        'tenure_months': 1,
+        'monthly_charges': 115.0,
+        'payment_method': 'Electronic check'
+    })
+    assert res.status_code == 200
+    data = res.get_json()
+    assert 'explainability' in data
+    assert data['explainability']['is_genuine_shap'] is True
+    assert 'top_risk_drivers' in data['explainability']
+    assert len(data['explainability']['top_risk_drivers']) > 0
+
+def test_predict_batch_raw_array(client):
+    raw_array = [
+        {'customer_id': 'ARR-1', 'contract_type': 'Two year', 'tenure_months': 60, 'monthly_charges': 35.0},
+        {'customer_id': 'ARR-2', 'contract_type': 'Month-to-month', 'tenure_months': 1, 'monthly_charges': 115.0}
+    ]
+    res = client.post('/predict-batch', json=raw_array)
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data['total_processed'] == 2
+    assert data['summary']['total_customers'] == 2
+
+

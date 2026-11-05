@@ -174,8 +174,9 @@ def compute_shap_explanations(transformed_row, feature_names):
 
     # Fallback only if SHAP library encounters runtime issue
     return {
-        'method': 'Tree Feature Weight Analysis',
+        'method': 'Explanation unavailable',
         'is_genuine_shap': False,
+        'message': 'SHAP explanation unavailable on server.',
         'top_risk_drivers': [],
         'top_protective_factors': []
     }
@@ -342,13 +343,18 @@ def predict_batch():
         return jsonify({'error': 'Machine learning model not loaded on server.'}), 503
 
     try:
-        errors = []
         if 'file' in request.files:
             file = request.files['file']
             if file.filename == '':
                 return jsonify({'error': 'Uploaded file is empty.'}), 400
             if not file.filename.endswith('.csv'):
                 return jsonify({'error': 'Invalid file format. Please upload a .csv file.'}), 400
+            # Validate max file size (10MB)
+            file.seek(0, os.SEEK_END)
+            file_size = file.tell()
+            file.seek(0)
+            if file_size > 10 * 1024 * 1024:
+                return jsonify({'error': 'File size exceeds 10MB limit.'}), 400
             try:
                 df = pd.read_csv(file)
             except Exception as parse_err:
@@ -371,6 +377,9 @@ def predict_batch():
             return jsonify({'error': 'Dataset contains zero rows.'}), 400
 
         total_records = len(df)
+        if total_records > 5000:
+            return jsonify({'error': f'Batch size exceeds maximum limit of 5,000 records (received {total_records}).'}), 400
+
         logger.info(f"ChurnIQ processing bulk batch of {total_records} customer records...")
 
         # Customer ID column detection

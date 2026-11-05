@@ -1,21 +1,39 @@
 [project]
-name = "telechurnai"
+name = "churniq"
 version = "1.0.0"
-description = "TeleChurn AI - Enterprise Customer Churn Prediction and Retention Intelligence System"
+description = "ChurnIQ — AI-Powered Customer Churn Prediction and Retention Intelligence Platform"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 authors = [
     { name = "UMAR MUKTHAR", email = "umarom98425@gmail.com" }
 ]
-keywords = ["machine-learning", "churn-prediction", "telecom", "random-forest", "retention-analytics", "enterprise-ai"]
+keywords = [
+    "machine-learning",
+    "churn-prediction",
+    "telecom",
+    "random-forest",
+    "xgboost",
+    "shap-explainability",
+    "retention-analytics",
+    "flask-api"
+]
 dependencies = [
-    "numpy>=2.3.5",
-    "pandas>=2.3.3",
-    "scikit-learn>=1.7.2",
-    "streamlit>=1.40.2",
-    "plotly>=5.24.1",
+    "Flask>=3.0.0",
+    "flask-cors>=4.0.0",
+    "scikit-learn>=1.4.0",
+    "joblib>=1.3.0",
+    "xgboost>=2.0.0",
+    "shap>=0.44.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "pytest>=8.0.0",
+    "gunicorn>=21.0.0"
 ]
 
 [project.urls]
 Homepage = "https://umarmukthar03.github.io/customer-churn-prediction/"
 Repository = "https://github.com/UMARMUKTHAR03/customer-churn-prediction"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
