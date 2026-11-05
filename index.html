@@ -134,7 +134,7 @@
         <div>
           <div class="flex items-center space-x-2">
             <span class="font-extrabold text-lg tracking-tight text-white">Churn<span class="text-indigo-400">IQ</span></span>
-            <span class="px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">98.2% Prec</span>
+            <span id="header-prec-badge" class="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">97.7% Prec</span>
             <span id="badge-model-version" class="hidden md:inline-block px-2 py-0.5 text-[10px] font-mono rounded-full bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">v3.1 Production</span>
           </div>
           <p class="text-[11px] text-slate-400 font-medium">Predict Churn. Understand Risk. Retain Customers.</p>
@@ -200,31 +200,31 @@
         
         <div class="p-2.5 rounded-xl bg-slate-900/50 border border-slate-800/80">
           <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">🎯 Model Accuracy</p>
-          <p id="ribbon-accuracy" class="text-lg font-black text-white mt-0.5 mono">92.2%</p>
+          <p id="ribbon-accuracy" class="text-lg font-black text-white mt-0.5 mono">95.3%</p>
           <span class="text-[10px] text-emerald-400">Holdout Tested</span>
         </div>
 
         <div class="p-2.5 rounded-xl bg-slate-900/50 border border-slate-800/80">
           <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">🎯 Precision</p>
-          <p id="ribbon-precision" class="text-lg font-black text-indigo-400 mt-0.5 mono">98.2%</p>
+          <p id="ribbon-precision" class="text-lg font-black text-indigo-400 mt-0.5 mono">97.7%</p>
           <span class="text-[10px] text-slate-400">Min False Alarms</span>
         </div>
 
         <div class="p-2.5 rounded-xl bg-slate-900/50 border border-slate-800/80">
           <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">🎯 Recall</p>
-          <p id="ribbon-recall" class="text-lg font-black text-emerald-400 mt-0.5 mono">70.6%</p>
+          <p id="ribbon-recall" class="text-lg font-black text-emerald-400 mt-0.5 mono">83.3%</p>
           <span class="text-[10px] text-slate-400">Churn Intercepted</span>
         </div>
 
         <div class="p-2.5 rounded-xl bg-slate-900/50 border border-slate-800/80">
           <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">🎯 F1 Score</p>
-          <p id="ribbon-f1" class="text-lg font-black text-cyan-400 mt-0.5 mono">0.821</p>
+          <p id="ribbon-f1" class="text-lg font-black text-cyan-400 mt-0.5 mono">0.900</p>
           <span class="text-[10px] text-slate-400">Harmonic Balance</span>
         </div>
 
         <div class="p-2.5 rounded-xl bg-slate-900/50 border border-slate-800/80">
           <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">📈 ROC-AUC</p>
-          <p id="ribbon-auc" class="text-lg font-black text-purple-400 mt-0.5 mono">0.929</p>
+          <p id="ribbon-auc" class="text-lg font-black text-purple-400 mt-0.5 mono">0.948</p>
           <span class="text-[10px] text-slate-400">High Discrimination</span>
         </div>
 
@@ -628,7 +628,7 @@
               <h3 class="text-base font-bold text-white">Top 15 Churn Determinants</h3>
               <p class="text-xs text-slate-400">Gini Impurity &amp; Global SHAP attribution across engineered features</p>
             </div>
-            <span class="text-xs font-mono text-indigo-400">350 Trees</span>
+            <span id="features-model-badge" class="text-xs font-mono text-indigo-400">200 Estimators</span>
           </div>
           <div class="h-72">
             <canvas id="chart-features"></canvas>
@@ -695,25 +695,25 @@
           
           <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
             <p class="text-xs font-semibold text-emerald-400">True Negatives (Retained)</p>
-            <p id="cm-tn" class="text-2xl font-black text-white mt-1 mono">900</p>
+            <p id="cm-tn" class="text-2xl font-black text-white mt-1 mono">898</p>
             <p class="text-[11px] text-slate-400 mt-1">Accurately predicted loyal</p>
           </div>
 
           <div class="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-center">
             <p class="text-xs font-semibold text-rose-400">False Positives (False Alarm)</p>
-            <p id="cm-fp" class="text-2xl font-black text-white mt-1 mono">4</p>
-            <p class="text-[11px] text-slate-400 mt-1">Ultra-low false alarm rate (0.4%)</p>
+            <p id="cm-fp" class="text-2xl font-black text-white mt-1 mono">6</p>
+            <p class="text-[11px] text-slate-400 mt-1">Ultra-low false alarm rate (0.6%)</p>
           </div>
 
           <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center">
             <p class="text-xs font-semibold text-amber-400">False Negatives (Missed Churn)</p>
-            <p id="cm-fn" class="text-2xl font-black text-white mt-1 mono">90</p>
+            <p id="cm-fn" class="text-2xl font-black text-white mt-1 mono">51</p>
             <p class="text-[11px] text-slate-400 mt-1">Missed customer defections</p>
           </div>
 
           <div class="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-center">
             <p class="text-xs font-semibold text-indigo-400">True Positives (Saved Churn)</p>
-            <p id="cm-tp" class="text-2xl font-black text-white mt-1 mono">216</p>
+            <p id="cm-tp" class="text-2xl font-black text-white mt-1 mono">255</p>
             <p class="text-[11px] text-slate-400 mt-1">Flagged for immediate retention</p>
           </div>
 
@@ -1038,7 +1038,7 @@
             <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">04</div>
             <h4 class="text-sm font-bold text-white">Multi-Model Training &amp; Tuning</h4>
             <p class="text-xs text-slate-400 leading-relaxed">
-              Benchmarks Logistic Regression, Decision Tree, Random Forest (350 trees), Gradient Boosting, and XGBoost with Stratified K-Fold.
+              Benchmarks Logistic Regression, Decision Tree, Random Forest, Gradient Boosting (200 estimators, Selected), and XGBoost with Stratified 5-Fold CV.
             </p>
             <span class="inline-block text-[10px] font-mono text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded">pipeline/train.py</span>
           </div>
@@ -2191,6 +2191,27 @@
       }
 
       renderAnalyticsCharts();
+      updateRibbonMetrics();
+    }
+
+    function updateRibbonMetrics() {
+      const accEl = document.getElementById('ribbon-accuracy');
+      const precEl = document.getElementById('ribbon-precision');
+      const recEl = document.getElementById('ribbon-recall');
+      const f1El = document.getElementById('ribbon-f1');
+      const aucEl = document.getElementById('ribbon-auc');
+      const hdrPrecEl = document.getElementById('header-prec-badge');
+      const featBadge = document.getElementById('features-model-badge');
+
+      if (accEl) accEl.textContent = `${dynamicMetrics.accuracy.toFixed(1)}%`;
+      if (precEl) precEl.textContent = `${dynamicMetrics.precision.toFixed(1)}%`;
+      if (recEl) recEl.textContent = `${dynamicMetrics.recall.toFixed(1)}%`;
+      if (f1El) f1El.textContent = dynamicMetrics.f1_score.toFixed(3);
+      if (aucEl) aucEl.textContent = dynamicMetrics.roc_auc.toFixed(3);
+      if (hdrPrecEl) hdrPrecEl.textContent = `${dynamicMetrics.precision.toFixed(1)}% Prec`;
+      if (featBadge && dynamicMetrics.model_name) {
+        featBadge.textContent = dynamicMetrics.model_name.includes('Gradient') ? '200 Estimators' : 'Model Estimators';
+      }
     }
 
     function renderAnalyticsCharts() {
