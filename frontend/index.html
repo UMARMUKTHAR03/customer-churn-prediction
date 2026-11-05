@@ -1114,7 +1114,7 @@
       <div class="space-y-3 text-xs">
         <div>
           <label class="block font-semibold text-slate-300 mb-1">Backend REST API Base URL</label>
-          <input type="text" id="modal-api-url" placeholder="http://127.0.0.1:5000" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500 mono">
+          <input type="text" id="modal-api-url" placeholder="https://churniq-backend-0zpa.onrender.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-200 focus:outline-none focus:border-indigo-500 mono">
           <p class="text-[11px] text-slate-400 mt-1">Point to local Flask server or hosted backend (Render/Railway/AWS).</p>
         </div>
 
@@ -1163,7 +1163,7 @@
   <!-- Core JavaScript Application Logic -->
   <script>
     // State Configuration
-    let API_BASE_URL = localStorage.getItem('churniq_api_url') || 'http://127.0.0.1:5000';
+    let API_BASE_URL = localStorage.getItem('churniq_api_url') || 'https://churniq-backend-0zpa.onrender.com';
     let isApiConnected = false;
     let selectedContract = 'Month-to-month';
     let predictionHistory = JSON.parse(localStorage.getItem('churniq_history') || '[]');
@@ -2474,7 +2474,14 @@
       updateTenureLabel(3);
       updateChargesLabel(95);
 
-      await testApiConnection();
+      const connected = await testApiConnection();
+      if (connected) {
+        try {
+          await refreshAnalytics();
+        } catch (analyticsErr) {
+          console.warn("Initial analytics refresh failed gracefully:", analyticsErr);
+        }
+      }
       runPrediction();
     });
   </script>
