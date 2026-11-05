@@ -215,10 +215,10 @@ def model_info():
             'platform': metrics.get('platform_name', 'ChurnIQ'),
             'project_title': metrics.get('project_title', 'ChurnIQ: Customer Retention Platform'),
             'tagline': metrics.get('tagline', 'Predict Churn. Understand Risk. Retain Customers.'),
-            'model_name': metrics.get('model_name', 'Random Forest'),
+            'model_name': metrics.get('model_name', 'Gradient Boosting'),
             'model_version': metrics.get('model_version', 'v3.1-production'),
             'training_date': metrics.get('training_date', '2026-11-05 UTC'),
-            'algorithm': metrics.get('algorithm', 'RandomForestClassifier(n_estimators=350, max_depth=14)'),
+            'algorithm': metrics.get('algorithm', 'GradientBoostingClassifier(n_estimators=200, learning_rate=0.08, max_depth=4)'),
             'dataset_stats': metrics.get('dataset_stats', {}),
             'evaluation_metrics': metrics.get('evaluation_metrics', {}),
             'threshold_analysis': metrics.get('threshold_analysis', [])
@@ -226,7 +226,7 @@ def model_info():
     
     return jsonify({
         'platform': 'ChurnIQ',
-        'model_name': 'Random Forest Classifier',
+        'model_name': 'Gradient Boosting Classifier',
         'model_version': 'v3.1-production',
         'status': 'Model in memory'
     }), 200
@@ -308,6 +308,10 @@ def predict_individual():
         feature_names = preprocessor.feature_names_
         explanations = compute_shap_explanations(X_trans, feature_names)
 
+        metrics = MODEL_CACHE.get('metrics') or {}
+        model_name = metrics.get('model_name', 'Gradient Boosting')
+        inf_engine = metrics.get('inference_engine', f'Genuine {model_name}')
+
         response = {
             'platform': 'ChurnIQ',
             'customer_id': str(data.get('customer_id', data.get('id', 'CUST-NEW'))),
@@ -318,8 +322,9 @@ def predict_individual():
             'risk_label': badge_label,
             'retention_strategy': retention_info,
             'explainability': explanations,
-            'model_version': 'v3.1-production',
-            'inference_engine': 'Genuine Random Forest (350 Trees)'
+            'model_name': model_name,
+            'model_version': metrics.get('model_version', 'v3.1-production'),
+            'inference_engine': inf_engine
         }
 
         return jsonify(response), 200
@@ -437,9 +442,16 @@ def predict_batch():
 
         results.sort(key=lambda x: x['churn_probability'], reverse=True)
 
+        metrics = MODEL_CACHE.get('metrics') or {}
+        model_name = metrics.get('model_name', 'Gradient Boosting')
+        inf_engine = metrics.get('inference_engine', f'Genuine {model_name}')
+
         return jsonify({
             'status': 'success',
             'platform': 'ChurnIQ',
+            'model_name': model_name,
+            'model_version': metrics.get('model_version', 'v3.1-production'),
+            'inference_engine': inf_engine,
             'total_processed': total_records,
             'summary': {
                 'total_customers': total_records,

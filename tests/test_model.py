@@ -83,3 +83,30 @@ def test_shap_explainer_artifact(model_and_prep):
     assert shap_vals is not None
 
 
+def test_artifact_and_metadata_consistency():
+    import json
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    model_path = os.path.join(base_dir, 'models', 'best_model.joblib')
+    prep_path = os.path.join(base_dir, 'models', 'preprocessor.joblib')
+    explainer_path = os.path.join(base_dir, 'models', 'explainer.joblib')
+    metrics_path = os.path.join(base_dir, 'models', 'metrics.json')
+
+    assert os.path.exists(model_path)
+    assert os.path.exists(prep_path)
+    assert os.path.exists(explainer_path)
+    assert os.path.exists(metrics_path)
+
+    model = joblib.load(model_path)
+    explainer = joblib.load(explainer_path)
+    preprocessor = joblib.load(prep_path)
+    with open(metrics_path, 'r') as f:
+        metrics = json.load(f)
+
+    # Verify model class aligns with metrics metadata
+    assert metrics['model_name'] == 'Gradient Boosting'
+    assert 'GradientBoostingClassifier' in type(model).__name__
+    assert metrics['inference_engine'] == 'Genuine Gradient Boosting'
+    assert metrics['model_version'] == 'v3.1-production'
+    assert 'GradientBoostingClassifier' in metrics['algorithm']
+    assert len(preprocessor.feature_names_) == metrics['dataset_stats']['total_features']
+
