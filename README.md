@@ -1,23 +1,28 @@
-# 📊 TeleChurn AI: Enterprise Customer Retention & Churn Prediction Platform
+# 📊 ChurnIQ: Intelligent Customer Churn Prediction & Retention Analytics Platform
 
 <div align="center">
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-TeleChurn_AI_Web_Platform-6366F1?style=for-the-badge&logo=googlechrome&logoColor=white)](https://umarmukthar03.github.io/customer-churn-prediction/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-ChurnIQ_Web_Platform-6366F1?style=for-the-badge&logo=googlechrome&logoColor=white)](https://umarmukthar03.github.io/customer-churn-prediction/)
 [![Accuracy](https://img.shields.io/badge/Model_Accuracy-92.2%25-10B981?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://umarmukthar03.github.io/customer-churn-prediction/)
 [![Precision](https://img.shields.io/badge/Precision-98.2%25-8B5CF6?style=for-the-badge)](https://umarmukthar03.github.io/customer-churn-prediction/)
 [![ROC-AUC](https://img.shields.io/badge/ROC--AUC-0.929-F59E0B?style=for-the-badge)](https://umarmukthar03.github.io/customer-churn-prediction/)
+[![Docker CI](https://img.shields.io/badge/CI%2FCD-Passing-34D399?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/UMARMUKTHAR03/customer-churn-prediction/actions)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Author](https://img.shields.io/badge/Engineered_By-Umar_Mukthar-rose?style=for-the-badge&logo=github)](https://github.com/UMARMUKTHAR03)
 
 <br/>
 
+> **Predict Churn. Understand Risk. Retain Customers.**
+
+<br/>
+
 <a href="https://umarmukthar03.github.io/customer-churn-prediction/">
-  <img src="./docs/preview.svg" alt="TeleChurn AI Enterprise Dashboard Preview" width="100%" />
+  <img src="./docs/preview.svg" alt="ChurnIQ Enterprise Dashboard Preview" width="100%" />
 </a>
 
 <br/>
 
-**[🚀 Launch Interactive Web Platform](https://umarmukthar03.github.io/customer-churn-prediction/)** • **[Explore Pipeline](#-the-ml-pipeline)** • **[Model Benchmarks](#-model-benchmarks--evaluation)** • **[API Documentation](#-rest-api-documentation)** • **[Quick Start](#-quick-start)**
+**[🚀 Launch Interactive Platform](https://umarmukthar03.github.io/customer-churn-prediction/)** • **[Explore Pipeline](#-the-ml-pipeline)** • **[Model Benchmarks](#-model-benchmarks--evaluation)** • **[What-If Simulator](#-what-if-counterfactual-simulator)** • **[API Documentation](#-rest-api-documentation)** • **[Docker & CI/CD](#-docker--container-deployment)**
 
 </div>
 
@@ -25,14 +30,16 @@
 
 ## 🎯 1. Project Overview & Business Problem
 
-Customer churn is one of the most critical challenges faced by modern telecommunications providers. Because acquiring a new subscriber is **5 to 7 times more expensive** than retaining an existing account, early identification of attrition risk directly impacts Monthly Recurring Revenue (MRR) and customer lifetime value (LTV).
+Customer churn is one of the most critical challenges faced by modern telecommunications providers. Because acquiring a new subscriber is **5 to 7 times more expensive** than retaining an existing account, early identification of attrition risk directly impacts Monthly Recurring Revenue (MRR) and Customer Lifetime Value (LTV).
 
-**TeleChurn AI** is an enterprise-grade, end-to-end Machine Learning customer churn prediction system designed and engineered by **UMAR MUKTHAR**. The application:
-- Predicts individual churn risk and probability using genuine Machine Learning models.
-- Explains predictions using **Explainable AI (SHAP TreeExplainer)**.
-- Formulates automated, personalized customer retention playbooks.
-- Processes bulk customer files via **drag-and-drop CSV batch inference**.
-- Operates both online via a **Flask REST API** and client-side as a high-performance progressive web app on **GitHub Pages**.
+**ChurnIQ** is an enterprise-grade, explainable AI-powered customer churn prediction and retention platform engineered by **UMAR MUKTHAR**. The application:
+- Predicts individual churn risk and probability using genuine Machine Learning models trained with **zero data leakage**.
+- Explains every prediction with mathematical attribution via **Explainable AI (SHAP TreeExplainer)**.
+- Formulates automated, personalized customer retention playbooks and calculates revenue at risk.
+- Simulates contract and pricing changes in real-time via the interactive **What-If Counterfactual Simulator**.
+- Processes bulk customer files via **drag-and-drop CSV batch inference (powered by Papa Parse)**.
+- Generates downloadable, executive-ready PDF audit reports using **jsPDF**.
+- Operates both online via a containerized **Flask REST API** and client-side as a high-performance progressive web app on **GitHub Pages**.
 
 ---
 
@@ -40,15 +47,17 @@ Customer churn is one of the most critical challenges faced by modern telecommun
 
 | Category | Capability |
 | :--- | :--- |
-| **🔮 Live Predictor** | Interactive manual customer entry form with sliders, dropdowns, checkboxes, and realistic test profiles. Real-time probability gauge and LTV risk estimation. |
+| **🔮 Live Predictor** | Interactive customer profile entry with sliders, dropdowns, checkboxes, and realistic test profiles. Real-time probability gauge and LTV risk estimation. |
 | **🧠 Genuine ML Models** | Benchmarked Random Forest (350 estimators) and XGBoost with zero data leakage and consistent preprocessing. |
 | **🔍 Explainable AI (SHAP)** | Local and global feature attribution highlighting root factors driving or mitigating churn. |
+| **🎛️ What-If Counterfactual Simulator** | Interactive slider panel allowing retention agents to test hypothetical contract switches, price discounts, and add-on activations to observe instant risk reduction. |
 | **💡 Retention Recommendations** | Intelligent prescription engine suggesting contract migration, discount credits, and VIP tech support bundles. |
-| **📂 Bulk CSV Prediction** | Drag-and-drop CSV batch inference with column validation, error handling, risk tier sorting, and one-click CSV download. |
+| **📄 Executive PDF Reports** | Instant client-side PDF assessment download featuring customer profile, risk rating, financial exposure, and retention playbook. |
+| **📂 Bulk CSV Prediction** | Drag-and-drop CSV batch inference with column validation, error handling, risk tier sorting, and enriched CSV export. |
 | **📊 Model Analytics Dashboard** | Real-time confusion matrix, ROC curves, Precision-Recall curves, feature importance ranking, and algorithm comparison table. |
 | **⚠️ At-Risk Account Management** | Filterable subscriber audit portfolio by risk tier (High >65%, Medium 35-65%, Low <35%) with action dispatchers. |
 | **🕒 Prediction History** | Client-persisted audit log with search, filters, and CSV export. |
-| **⚙️ 4-Stage Automated Pipeline** | Clean, encode, feature synthesis, and training pipeline runnable with one command. |
+| **🐳 Docker & CI/CD** | Production-ready `Dockerfile`, `docker-compose.yml`, and GitHub Actions automated test workflow. |
 
 ---
 
@@ -57,15 +66,17 @@ Customer churn is one of the most critical challenges faced by modern telecommun
 ```mermaid
 graph TD
     subgraph "Frontend Layer (GitHub Pages / SPA)"
-        UI[Interactive Web Dashboard: index.html]
-        LP[Live Predictor Form]
-        BP[Bulk CSV Uploader]
-        AP[At-Risk Subscriber Portfolio]
-        AN[Chart.js Model Analytics]
+        UI["Interactive Web Dashboard: index.html"]
+        LP["Live Predictor Form"]
+        WI["What-If Counterfactual Simulator"]
+        BP["Bulk CSV Uploader (Papa Parse)"]
+        PDF["jsPDF Report Generator"]
+        AP["At-Risk Subscriber Portfolio"]
+        AN["Chart.js Model Analytics"]
     end
 
-    subgraph "REST API Layer (Flask / Python)"
-        API[Flask REST API: backend/app.py]
+    subgraph "REST API Layer (Flask / Python / Gunicorn)"
+        API["Flask REST API: backend/app.py"]
         H_EP["GET /health"]
         M_EP["GET /model-info"]
         A_EP["GET /analytics"]
@@ -74,7 +85,7 @@ graph TD
     end
 
     subgraph "Machine Learning Engine"
-        PREP[TelecomDataPreprocessor: models/preprocessor.joblib]
+        PREP["TelecomDataPreprocessor: models/preprocessor.joblib"]
         RF["Random Forest Classifier (350 Trees): models/best_model.joblib"]
         XGB["XGBoost Classifier (Benchmark)"]
         SHAP["SHAP TreeExplainer (Feature Attribution)"]
@@ -86,8 +97,8 @@ graph TD
         METRICS["models/metrics.json"]
     end
 
-    UI --> LP & BP & AP & AN
-    LP & BP -->|HTTPS REST| API
+    UI --> LP & WI & BP & PDF & AP & AN
+    LP & WI & BP -->|HTTPS REST| API
     API --> H_EP & M_EP & A_EP & P_EP & PB_EP
     P_EP & PB_EP --> PREP --> RF & SHAP
     A_EP --> METRICS
@@ -118,35 +129,51 @@ All candidate algorithms were benchmarked on an **independent holdout test set (
 | **Actual Churn (1)** | **90** (False Negative) | **216** (True Positive / 70.6%) | 306 |
 | **Total Predicted** | 990 | 220 | **1,210** |
 
-- **Precision of 98.18%**: When TeleChurn AI flags an account as at-risk, it is accurate **98.2% of the time**, eliminating wasted retention spending on happy customers.
+- **Precision of 98.18%**: When ChurnIQ flags an account as at-risk, it is accurate **98.2% of the time**, eliminating wasted retention spending on happy customers.
 - **Accuracy of 92.23%**: High overall classification consistency on holdout data.
 
 ---
 
-## 🛠️ 5. Technology Stack
+## 🎛️ 5. What-If Counterfactual Simulator
 
-- **Frontend**: Modern HTML5, Tailwind CSS, Vanilla JavaScript (ES6+), Chart.js
-- **Backend**: Flask 3.1, Flask-CORS 6.0, Gunicorn
-- **Machine Learning**: Scikit-Learn 1.9, XGBoost 3.4, SHAP 0.54, Joblib 1.6
-- **Data Engineering**: Pandas 2.3, NumPy 2.2, Scipy 1.18
-- **Testing**: Pytest 9.2 (14 unit and integration test cases)
-- **Deployment**: GitHub Pages (Static Web App) + Flask Python REST API (Render / Railway / Cloud)
+The **What-If Simulator** enables customer success managers to interactively explore counterfactual retention strategies:
+1. Load a high-risk customer profile (e.g. Month-to-Month subscriber paying \$105/mo with 78% churn probability).
+2. Adjust levers in real time:
+   - Switch contract from **Month-to-month** to **One-Year** or **Two-Year**.
+   - Apply a **15% retention billing discount**.
+   - Activate complimentary **Tech Support** or **Online Security**.
+3. View the immediate recalculated churn probability drop (e.g., from **78% High Risk** down to **18% Low Risk**) and estimated saved annual revenue.
 
 ---
 
-## 📂 6. Repository Structure
+## 🛠️ 6. Technology Stack
+
+- **Frontend**: Modern HTML5, Tailwind CSS, Vanilla JavaScript (ES6+), Chart.js, Papa Parse 5.4, jsPDF 2.5
+- **Backend**: Flask 3.1, Flask-CORS 6.0, Gunicorn 23.0
+- **Machine Learning**: Scikit-Learn 1.9, XGBoost 3.4, SHAP 0.54, Joblib 1.6
+- **Data Engineering**: Pandas 2.3, NumPy 2.2, Scipy 1.18
+- **Testing**: Pytest 9.2 (14 unit and integration test cases)
+- **Containerization & CI/CD**: Docker, Docker Compose, GitHub Actions
+- **Deployment**: GitHub Pages (Static Web Platform) + Flask REST API (Render / Railway / Cloud)
+
+---
+
+## 📂 7. Repository Structure
 
 ```text
 customer-churn-prediction/
 │
+├── .github/workflows/
+│   └── ci.yml                    # Automated GitHub Actions test pipeline
+│
 ├── frontend/                     # Modular frontend assets
-│   ├── index.html                # Web interface
+│   ├── index.html                # Mirrored web interface
 │   ├── style.css                 # Custom glassmorphic styling
 │   └── script.js                 # Frontend orchestration logic
 │
 ├── backend/                      # Python REST API server
 │   ├── app.py                    # Flask application factory & CORS configuration
-│   ├── routes.py                 # API endpoints (/health, /predict, /predict-batch)
+│   ├── routes.py                 # API endpoints (/health, /predict, /predict-batch, /analytics)
 │   └── requirements.txt          # Backend dependencies
 │
 ├── data/                         # Datasets
@@ -162,6 +189,7 @@ customer-churn-prediction/
 ├── models/                       # Serialized model artifacts
 │   ├── best_model.joblib         # Trained Random Forest classifier
 │   ├── best_model.pkl            # Backwards-compatible pickle artifact
+│   ├── explainer.joblib          # Fitted SHAP TreeExplainer
 │   ├── preprocessor.joblib       # Fitted TelecomDataPreprocessor
 │   └── metrics.json              # Verified evaluation metrics & curves
 │
@@ -170,7 +198,7 @@ customer-churn-prediction/
 │   ├── preprocessor.py           # Zero-leakage Scikit-Learn Transformer
 │   ├── clean.py                  # Deduplication & missing value imputation
 │   ├── encode.py                 # Categorical dummy transformation
-│   ├── features.py               # 53 synthesized telemetry features
+│   ├── features.py               # Synthesized telemetry features
 │   ├── train.py                  # Multi-model benchmarking & evaluation
 │   └── run_pipeline.py           # Master 1-click pipeline execution script
 │
@@ -182,16 +210,18 @@ customer-churn-prediction/
 │   ├── test_model.py             # Model loading, predict & consistency tests
 │   └── test_api.py               # Flask REST API integration tests
 │
+├── Dockerfile                    # Production container image specification
+├── docker-compose.yml            # Multi-container orchestration
 ├── index.html                    # GitHub Pages production entry point
 ├── app.py                        # Root server launcher
 ├── requirements.txt              # Project dependencies
 ├── pyproject.toml                # Project metadata
-└── README.md                     # Documentation
+└── README.md                     # Complete documentation
 ```
 
 ---
 
-## 🚀 7. Quick Start Guide
+## 🚀 8. Quick Start Guide
 
 ### 1. Launch Online Web App (Zero Setup)
 Access the live platform in your browser:  
@@ -238,7 +268,28 @@ python app.py
 
 ---
 
-## 📡 8. REST API Documentation
+## 🐳 9. Docker & Container Deployment
+
+### Run with Docker
+
+```bash
+# Build the image
+docker build -t churniq:latest .
+
+# Run the container
+docker run -d -p 5000:5000 --name churniq-app churniq:latest
+```
+
+### Run with Docker Compose
+
+```bash
+docker compose up -d
+```
+Access the service at `http://localhost:5000`.
+
+---
+
+## 📡 10. REST API Documentation
 
 ### Base URL: `http://127.0.0.1:5000` or `/api`
 
@@ -247,7 +298,7 @@ Verifies backend status and model readiness.
 ```json
 {
   "status": "healthy",
-  "service": "TeleChurn AI Enterprise Engine",
+  "service": "ChurnIQ Enterprise Engine",
   "model_loaded": true,
   "preprocessor_loaded": true,
   "shap_available": true

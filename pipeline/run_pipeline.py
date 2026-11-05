@@ -1,14 +1,13 @@
 """
-Master Automated Machine Learning Pipeline Runner
-Executes the full end-to-end data processing, feature engineering, model training,
-multi-algorithm benchmarking, and artifact generation in one click.
+ChurnIQ — Master Machine Learning Pipeline Runner
+Author: Umar Mukthar
+Predict Churn. Understand Risk. Retain Customers.
 """
 
 import sys
 import os
 import time
 
-# Ensure project root is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from pipeline.clean import clean_dataset
@@ -18,7 +17,7 @@ from pipeline.train import train_and_evaluate
 
 def run_master_pipeline():
     print("=" * 70)
-    print("🚀 TeleChurn AI — Master Machine Learning Pipeline Execution")
+    print("🚀 ChurnIQ — Master Machine Learning Pipeline Execution")
     print("=" * 70)
     start_total = time.time()
 
@@ -46,20 +45,21 @@ def run_master_pipeline():
     print(f"✓ Final feature matrix saved ({features_df.shape[1]} features) in {time.time() - feat_start:.2f}s")
 
     # Stage 4: Model Training & Evaluation
-    print("\n[STAGE 4/4] Multi-Algorithm Training, Tuning & Evaluation...")
+    print("\n[STAGE 4/4] Multi-Algorithm Training, Cross-Validation & SHAP...")
     train_start = time.time()
     metrics = train_and_evaluate(
         raw_train_path=raw_train,
         model_save_path='models/best_model.joblib',
         preprocessor_save_path='models/preprocessor.joblib',
+        explainer_save_path='models/explainer.joblib',
         metrics_save_path='models/metrics.json'
     )
     print(f"✓ Model training & benchmarking complete in {time.time() - train_start:.2f}s")
 
     total_time = round(time.time() - start_total, 2)
     print("\n" + "=" * 70)
-    print(f"🎉 Full Pipeline Completed in {total_time} seconds!")
-    print(f"   Model Name:        {metrics['model_name']} ({metrics['model_version']})")
+    print(f"🎉 ChurnIQ Master Pipeline Completed in {total_time} seconds!")
+    print(f"   Platform:          {metrics['platform_name']} ({metrics['model_version']})")
     print(f"   Holdout Accuracy:  {metrics['evaluation_metrics']['accuracy']*100:.2f}%")
     print(f"   Holdout Precision: {metrics['evaluation_metrics']['precision']*100:.2f}%")
     print(f"   Holdout Recall:    {metrics['evaluation_metrics']['recall']*100:.2f}%")

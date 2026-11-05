@@ -64,3 +64,4 @@ def test_prediction_consistency(model_and_prep):
     prob2 = model.predict_proba(X_trans2)[0][1]
     
     assert prob1 == prob2, "Predictions for identical inputs must be strictly consistent."
+

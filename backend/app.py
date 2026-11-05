@@ -1,6 +1,7 @@
 """
-Flask Application Entry Point - TeleChurn AI Enterprise Server
-Provides REST API endpoints with secure CORS configuration and robust error handling.
+ChurnIQ — Flask REST API Application Factory
+Author: Umar Mukthar
+Tagline: Predict Churn. Understand Risk. Retain Customers.
 """
 
 import os
@@ -9,14 +10,13 @@ import logging
 from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 
-# Add root directory to sys.path so pipeline imports resolve cleanly
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 from backend.routes import api_bp
 
-logger = logging.getLogger('telechurn_app')
+logger = logging.getLogger('churniq_app')
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 
 def create_app():
@@ -39,6 +39,7 @@ def create_app():
     def not_found(e):
         return jsonify({
             'error': 'Resource not found',
+            'platform': 'ChurnIQ',
             'available_endpoints': [
                 'GET /health',
                 'GET /model-info',
@@ -60,5 +61,5 @@ app = create_app()
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    logger.info(f"Starting TeleChurn AI Backend Server on port {port}...")
+    logger.info(f"Starting ChurnIQ REST API Server on port {port}...")
     app.run(host='0.0.0.0', port=port, debug=False)

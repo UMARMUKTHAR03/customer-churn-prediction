@@ -1,9 +1,12 @@
 {
+  "platform_name": "ChurnIQ",
+  "project_title": "ChurnIQ: An Explainable AI-Powered Customer Churn Prediction and Retention Intelligence Platform",
+  "tagline": "Predict Churn. Understand Risk. Retain Customers.",
   "model_name": "Random Forest",
-  "model_version": "v3.0-production",
-  "training_date": "2026-11-05 15:17:20 UTC",
+  "model_version": "v3.1-production",
+  "training_date": "2026-11-05 15:56:49 UTC",
   "algorithm": "RandomForestClassifier(n_estimators=350, max_depth=14, criterion=\"gini\")",
-  "execution_time_sec": 8.58,
+  "execution_time_sec": 49.87,
   "dataset_stats": {
     "raw_records": 6180,
     "deduplicated_records": 6048,
@@ -39,43 +42,53 @@
   "model_comparison": [
     {
       "algorithm": "Logistic Regression",
-      "accuracy": 0.8116,
-      "precision": 0.7267,
-      "recall": 0.4085,
-      "f1_score": 0.523,
-      "roc_auc": 0.8009
+      "holdout_accuracy": 0.8116,
+      "holdout_precision": 0.7267,
+      "holdout_recall": 0.4085,
+      "holdout_f1": 0.523,
+      "holdout_roc_auc": 0.8009,
+      "cv_accuracy_mean": 0.802,
+      "cv_accuracy_std": 0.0065
     },
     {
       "algorithm": "Decision Tree",
-      "accuracy": 0.9215,
-      "precision": 0.8981,
-      "recall": 0.7778,
-      "f1_score": 0.8336,
-      "roc_auc": 0.9081
+      "holdout_accuracy": 0.9215,
+      "holdout_precision": 0.8981,
+      "holdout_recall": 0.7778,
+      "holdout_f1": 0.8336,
+      "holdout_roc_auc": 0.9081,
+      "cv_accuracy_mean": 0.9024,
+      "cv_accuracy_std": 0.0142
     },
     {
       "algorithm": "Random Forest",
-      "accuracy": 0.9223,
-      "precision": 0.9818,
-      "recall": 0.7059,
-      "f1_score": 0.8213,
-      "roc_auc": 0.9291
+      "holdout_accuracy": 0.9223,
+      "holdout_precision": 0.9818,
+      "holdout_recall": 0.7059,
+      "holdout_f1": 0.8213,
+      "holdout_roc_auc": 0.9291,
+      "cv_accuracy_mean": 0.9138,
+      "cv_accuracy_std": 0.0088
     },
     {
       "algorithm": "Gradient Boosting",
-      "accuracy": 0.9529,
-      "precision": 0.977,
-      "recall": 0.8333,
-      "f1_score": 0.8995,
-      "roc_auc": 0.9483
+      "holdout_accuracy": 0.9529,
+      "holdout_precision": 0.977,
+      "holdout_recall": 0.8333,
+      "holdout_f1": 0.8995,
+      "holdout_roc_auc": 0.9483,
+      "cv_accuracy_mean": 0.9483,
+      "cv_accuracy_std": 0.0101
     },
     {
       "algorithm": "XGBoost",
-      "accuracy": 0.9496,
-      "precision": 0.9767,
-      "recall": 0.8203,
-      "f1_score": 0.8917,
-      "roc_auc": 0.9515
+      "holdout_accuracy": 0.9496,
+      "holdout_precision": 0.9767,
+      "holdout_recall": 0.8203,
+      "holdout_f1": 0.8917,
+      "holdout_roc_auc": 0.9515,
+      "cv_accuracy_mean": 0.9458,
+      "cv_accuracy_std": 0.0107
     }
   ],
   "top_features": [
@@ -140,6 +153,118 @@
       "importance": 0.0217
     }
   ],
+  "shap_global_importance": [
+    {
+      "feature": "competitor_price_diff",
+      "mean_shap_value": 0.096
+    },
+    {
+      "feature": "tenure_months",
+      "mean_shap_value": 0.0361
+    },
+    {
+      "feature": "charge_per_service",
+      "mean_shap_value": 0.0352
+    },
+    {
+      "feature": "last_interaction_days",
+      "mean_shap_value": 0.0323
+    },
+    {
+      "feature": "monthly_charges",
+      "mean_shap_value": 0.031
+    },
+    {
+      "feature": "is_long_term",
+      "mean_shap_value": 0.0282
+    },
+    {
+      "feature": "has_online_security",
+      "mean_shap_value": 0.0179
+    },
+    {
+      "feature": "has_tech_support",
+      "mean_shap_value": 0.0128
+    },
+    {
+      "feature": "sms_per_month",
+      "mean_shap_value": 0.0123
+    },
+    {
+      "feature": "total_charges",
+      "mean_shap_value": 0.0119
+    },
+    {
+      "feature": "approx_ltv",
+      "mean_shap_value": 0.0097
+    },
+    {
+      "feature": "has_online_backup",
+      "mean_shap_value": 0.0084
+    },
+    {
+      "feature": "contract_Month-to-month",
+      "mean_shap_value": 0.0081
+    },
+    {
+      "feature": "age",
+      "mean_shap_value": 0.0064
+    },
+    {
+      "feature": "num_services",
+      "mean_shap_value": 0.0058
+    }
+  ],
+  "threshold_analysis": [
+    {
+      "threshold": 0.3,
+      "precision": 0.7994,
+      "recall": 0.8333,
+      "f1_score": 0.816
+    },
+    {
+      "threshold": 0.35,
+      "precision": 0.8723,
+      "recall": 0.8039,
+      "f1_score": 0.8367
+    },
+    {
+      "threshold": 0.4,
+      "precision": 0.9528,
+      "recall": 0.7908,
+      "f1_score": 0.8643
+    },
+    {
+      "threshold": 0.45,
+      "precision": 0.9751,
+      "recall": 0.768,
+      "f1_score": 0.8592
+    },
+    {
+      "threshold": 0.5,
+      "precision": 0.9818,
+      "recall": 0.7059,
+      "f1_score": 0.8213
+    },
+    {
+      "threshold": 0.55,
+      "precision": 0.9849,
+      "recall": 0.6405,
+      "f1_score": 0.7762
+    },
+    {
+      "threshold": 0.6,
+      "precision": 0.9943,
+      "recall": 0.5719,
+      "f1_score": 0.7261
+    },
+    {
+      "threshold": 0.65,
+      "precision": 0.9937,
+      "recall": 0.5163,
+      "f1_score": 0.6796
+    }
+  ],
   "distribution": {
     "labels": [
       "0-10%",
@@ -184,103 +309,127 @@
       "tpr": 0.0
     },
     {
-      "fpr": 0.0022,
+      "fpr": 0.0011,
       "tpr": 0.6144
     },
     {
-      "fpr": 0.0044,
-      "tpr": 0.7647
+      "fpr": 0.0033,
+      "tpr": 0.6732
+    },
+    {
+      "fpr": 0.0055,
+      "tpr": 0.768
     },
     {
       "fpr": 0.0111,
-      "tpr": 0.7778
+      "tpr": 0.7876
     },
     {
       "fpr": 0.0155,
       "tpr": 0.7941
     },
     {
-      "fpr": 0.0387,
+      "fpr": 0.0376,
       "tpr": 0.8007
     },
     {
-      "fpr": 0.0431,
-      "tpr": 0.8203
+      "fpr": 0.0409,
+      "tpr": 0.817
+    },
+    {
+      "fpr": 0.0454,
+      "tpr": 0.8235
     },
     {
       "fpr": 0.0708,
-      "tpr": 0.8268
+      "tpr": 0.8333
     },
     {
       "fpr": 0.0796,
       "tpr": 0.8431
     },
     {
-      "fpr": 0.0973,
+      "fpr": 0.0951,
       "tpr": 0.8497
     },
     {
-      "fpr": 0.1327,
-      "tpr": 0.866
+      "fpr": 0.1128,
+      "tpr": 0.8627
+    },
+    {
+      "fpr": 0.1582,
+      "tpr": 0.8693
     },
     {
       "fpr": 0.1737,
-      "tpr": 0.8758
+      "tpr": 0.8791
     },
     {
       "fpr": 0.1781,
       "tpr": 0.8856
     },
     {
-      "fpr": 0.1936,
+      "fpr": 0.1847,
       "tpr": 0.8922
     },
     {
-      "fpr": 0.208,
-      "tpr": 0.902
+      "fpr": 0.1958,
+      "tpr": 0.8987
+    },
+    {
+      "fpr": 0.2212,
+      "tpr": 0.9052
     },
     {
       "fpr": 0.3009,
-      "tpr": 0.9118
+      "tpr": 0.915
     },
     {
       "fpr": 0.3108,
       "tpr": 0.9216
     },
     {
-      "fpr": 0.4425,
+      "fpr": 0.3684,
       "tpr": 0.9281
     },
     {
-      "fpr": 0.4757,
-      "tpr": 0.9379
+      "fpr": 0.448,
+      "tpr": 0.9346
+    },
+    {
+      "fpr": 0.4856,
+      "tpr": 0.9412
     },
     {
       "fpr": 0.5752,
-      "tpr": 0.9444
+      "tpr": 0.9477
     },
     {
       "fpr": 0.6659,
       "tpr": 0.9542
     },
     {
-      "fpr": 0.7434,
+      "fpr": 0.7124,
       "tpr": 0.9608
     },
     {
-      "fpr": 0.7644,
-      "tpr": 0.9706
+      "fpr": 0.7555,
+      "tpr": 0.9673
+    },
+    {
+      "fpr": 0.7732,
+      "tpr": 0.9739
     },
     {
       "fpr": 0.8053,
-      "tpr": 0.9771
+      "tpr": 0.9804
     },
     {
       "fpr": 0.8529,
       "tpr": 0.9869
     },
     {
-      "fpr": 0.9126,
+      "fpr": 0.9049,
       "tpr": 0.9967
     },
     {
@@ -295,19 +444,23 @@
     },
     {
       "recall": 1.0,
-      "precision": 0.2633
+      "precision": 0.2615
     },
     {
-      "recall": 0.9935,
-      "precision": 0.2729
+      "recall": 0.9967,
+      "precision": 0.2699
     },
     {
-      "recall": 0.9837,
-      "precision": 0.2824
+      "recall": 0.9869,
+      "precision": 0.2771
+    },
+    {
+      "recall": 0.9804,
+      "precision": 0.2857
     },
     {
       "recall": 0.9771,
-      "precision": 0.2937
+      "precision": 0.296
     },
     {
       "recall": 0.9641,
@@ -315,78 +468,94 @@
     },
     {
       "recall": 0.9575,
-      "precision": 0.3178
+      "precision": 0.3151
     },
     {
       "recall": 0.951,
-      "precision": 0.333
+      "precision": 0.327
+    },
+    {
+      "recall": 0.951,
+      "precision": 0.3424
     },
     {
       "recall": 0.9477,
-      "precision": 0.3511
+      "precision": 0.358
     },
     {
       "recall": 0.9444,
-      "precision": 0.3715
+      "precision": 0.3753
     },
     {
       "recall": 0.9412,
       "precision": 0.3945
     },
     {
-      "recall": 0.9281,
-      "precision": 0.4164
+      "recall": 0.9314,
+      "precision": 0.413
     },
     {
       "recall": 0.9281,
-      "precision": 0.4479
+      "precision": 0.4369
     },
     {
       "recall": 0.9248,
-      "precision": 0.4829
+      "precision": 0.4639
+    },
+    {
+      "recall": 0.9216,
+      "precision": 0.4947
     },
     {
       "recall": 0.9118,
-      "precision": 0.5186
+      "precision": 0.5264
     },
     {
       "recall": 0.9052,
       "precision": 0.5653
     },
     {
-      "recall": 0.8922,
-      "precision": 0.6176
+      "recall": 0.8954,
+      "precision": 0.6089
     },
     {
-      "recall": 0.866,
-      "precision": 0.6726
+      "recall": 0.8693,
+      "precision": 0.6488
     },
     {
-      "recall": 0.8497,
-      "precision": 0.7514
+      "recall": 0.8627,
+      "precision": 0.7135
     },
     {
-      "recall": 0.8235,
-      "precision": 0.8456
+      "recall": 0.8431,
+      "precision": 0.7818
+    },
+    {
+      "recall": 0.8203,
+      "precision": 0.8655
     },
     {
       "recall": 0.7843,
       "precision": 0.96
     },
     {
-      "recall": 0.6503,
-      "precision": 0.9851
+      "recall": 0.6732,
+      "precision": 0.981
     },
     {
-      "recall": 0.5,
-      "precision": 0.9935
+      "recall": 0.5523,
+      "precision": 0.9941
     },
     {
-      "recall": 0.3464,
+      "recall": 0.4248,
       "precision": 1.0
     },
     {
-      "recall": 0.1895,
+      "recall": 0.2941,
+      "precision": 1.0
+    },
+    {
+      "recall": 0.1634,
       "precision": 1.0
     },
     {

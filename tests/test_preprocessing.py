@@ -118,3 +118,4 @@ def test_cleaning_deduplication(tmp_path):
     cleaned = clean_dataset(str(raw_csv), str(out_csv))
     assert len(cleaned) == 2  # Duplicate removed
     assert cleaned['income'].isnull().sum() == 0  # Imputed
+
