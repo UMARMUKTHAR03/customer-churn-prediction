@@ -32,14 +32,14 @@
 
 Customer churn is one of the most critical revenue risks faced by modern telecommunications providers. Because acquiring a new subscriber costs **5 to 7 times more** than retaining an existing account, early identification of attrition risk directly impacts Monthly Recurring Revenue (MRR) and Customer Lifetime Value (LTV).
 
-**ChurnIQ** is an enterprise-grade, explainable AI-powered customer churn prediction and retention platform engineered by **UMAR MUKTHAR**. The application:
+**ChurnIQ** is an explainable AI-powered customer churn prediction and retention analytics software prototype engineered by **UMAR MUKTHAR**. The application:
 - Predicts individual churn risk and probability using genuine Machine Learning models trained with **zero data leakage**.
 - Explains every prediction with exact mathematical attribution via **Explainable AI (SHAP TreeExplainer)**.
-- Formulates automated, personalized customer retention playbooks and calculates revenue at risk.
-- Simulates contract and pricing changes in real-time via the interactive **What-If Counterfactual Simulator**.
-- Processes bulk customer files via **drag-and-drop CSV batch inference (powered by Papa Parse)**.
-- Generates downloadable, executive-ready PDF audit reports using **jsPDF**.
-- Operates both online via a containerized **Flask REST API** and client-side as a high-performance progressive web app on **GitHub Pages**.
+- Formulates automated, personalized customer retention playbooks with clearly labeled illustrative revenue risk estimates.
+- Simulates contract and pricing changes in real-time via the interactive **What-If Counterfactual Simulator** executing genuine model re-inference.
+- Processes bulk customer files via **drag-and-drop CSV batch inference (powered by Papa Parse)** with safe row-level error handling.
+- Generates downloadable, audit-ready PDF assessment reports using **jsPDF**.
+- Operates as a static progressive web application hosted on **GitHub Pages** connected to a containerized **Flask REST API** deployed on **Render**.
 
 ---
 
@@ -163,9 +163,11 @@ All candidate algorithms were benchmarked on an **independent holdout test set (
 | **Actual Churn (1)** | **51** (False Negative) | **255** (True Positive / 83.3%) | 306 |
 | **Total Predicted** | 949 | 261 | **1,210** |
 
-- **Precision of 97.70%**: When ChurnIQ flags an account as at-risk, it is accurate **97.7% of the time**, eliminating wasted retention spending on happy customers.
+- **Precision of 97.70%**: On the independent holdout evaluation set, positive churn classifications achieved a 97.7% true-positive rate, substantially reducing false alarms compared to baseline models.
 - **Accuracy of 95.29%**: High overall classification consistency on holdout data.
 - **Recall of 83.33%**: Intercepts over 83% of subscriber defections prior to contract lapse.
+- **Decision Threshold (0.50)**: Canonical 0.50 decision threshold locked strictly based on out-of-fold training cross-validation analysis prior to holdout evaluation.
+- **Illustrative Recovery Estimates**: The modeled 65% retained revenue calculation is an indicative decision-support benchmark, not an experimentally proven causal recovery guarantee.
 
 ---
 
@@ -175,9 +177,9 @@ All candidate algorithms were benchmarked on an **independent holdout test set (
 - **Backend**: Flask 3.1, Flask-CORS 6.0, Gunicorn 23.0
 - **Machine Learning**: Scikit-Learn 1.9, XGBoost 3.4, SHAP 0.54, Joblib 1.6
 - **Data Engineering**: Pandas 2.3, NumPy 2.2, Scipy 1.18
-- **Testing**: Pytest 9.2 (17 automated unit and integration tests)
+- **Testing**: Pytest 9.2 (21 automated unit and integration tests)
 - **Containerization & CI/CD**: Docker, Docker Compose, GitHub Actions
-- **Deployment**: GitHub Pages (Static Web Platform) + Flask REST API (Render / Railway / Cloud)
+- **Deployment Architecture**: GitHub Pages (Static Web Frontend) + Flask REST API (Render Docker Web Service)
 
 ---
 
@@ -239,7 +241,7 @@ customer-churn-prediction/
 ├── notebooks/                    # Jupyter notebooks
 │   └── eda.ipynb                 # Comprehensive exploratory data analysis
 │
-├── tests/                        # Automated test suite (17 tests)
+├── tests/                        # Automated test suite (21 tests)
 │   ├── test_preprocessing.py     # Pipeline & transformer unit tests
 │   ├── test_model.py             # Model loading, predict & SHAP artifact tests
 │   └── test_api.py               # Flask REST API integration & batch tests
@@ -291,7 +293,7 @@ python pipeline/run_pipeline.py
 ```bash
 python -m pytest tests/ -v
 ```
-*Verifies preprocessing, model determinism, SHAP explainer output, and API endpoints across 17 automated tests.*
+*Verifies preprocessing, model determinism, SHAP explainer output, input validation, What-If re-inference, and batch cleansing across 21 automated tests.*
 
 ### 5. Start Flask Backend Server
 
@@ -323,32 +325,37 @@ Access the service at `http://localhost:5000`.
 
 ---
 
-## ☁️ 10. Public Backend Deployment Guide
+## ☁️ 10. Production Deployment Architecture
 
-To connect the live GitHub Pages static frontend to a live public API:
+The live ChurnIQ application operates via a decoupled architecture:
 
-### Option A: Deploy on Render.com (Recommended)
-1. Fork or push this repository to GitHub.
-2. Sign in to [Render](https://render.com) and click **New Web Service**.
-3. Connect your `customer-churn-prediction` repository.
-4. Set the following build configuration:
-   - **Environment:** `Python 3`
-   - **Build Command:** `pip install -r requirements.txt`
-   - **Start Command:** `gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 4 app:app`
-5. Click **Deploy Web Service**.
-6. Once deployed, copy your Render URL (e.g. `https://churniq-api.onrender.com`).
-7. Open the live frontend on GitHub Pages, click **API Settings**, enter your URL, and click **Connect API**.
+### 1. Frontend: GitHub Pages
+- **Live URL:** [https://umarmukthar03.github.io/customer-churn-prediction/](https://umarmukthar03.github.io/customer-churn-prediction/)
+- **Hosting Source:** `gh-pages` branch, root `/`
+- Configured with `.nojekyll` to bypass Jekyll static processing and serve the single-page application directly.
+- Persists user-configured backend URLs and prediction audit history in browser `localStorage`.
 
-### Option B: Deploy on Railway
-1. Sign in to [Railway](https://railway.app) and create a **New Project from GitHub Repo**.
-2. Railway automatically detects `Dockerfile` and builds the container.
-3. Generate a public domain under service settings and paste it into ChurnIQ frontend settings.
+### 2. Backend API: Render Web Service
+- **Live API URL:** `https://churniq-backend-0zpa.onrender.com`
+- **Hosting Environment:** Render Docker Web Service
+- **Source Repository:** `UMARMUKTHAR03/customer-churn-prediction`, branch `main`
+- **Container Build:** Uses project [Dockerfile](Dockerfile) with multi-stage Python setup and Gunicorn WSGI server binding dynamically to `$PORT`.
+- **CORS Support:** Integrated Flask-CORS headers enabling cross-origin requests from GitHub Pages and local development environments.
+
+### Local & Custom Cloud Deployment
+If deploying your own private instance:
+1. Build and run using Docker:
+   ```bash
+   docker build -t churniq-backend .
+   docker run -p 5000:5000 churniq-backend
+   ```
+2. In the ChurnIQ web interface, click **API Settings** (gear icon) in the header, input your custom backend URL, and click **Save & Apply**.
 
 ---
 
 ## 📡 11. REST API Documentation
 
-### Base URL: `http://127.0.0.1:5000` or `/api`
+### Base URL: `https://churniq-backend-0zpa.onrender.com` (Production) or `http://127.0.0.1:5000` (Local)
 
 ### `GET /health`
 Verifies backend status and model readiness.
@@ -454,6 +461,7 @@ To display the official 1200 × 630 ChurnIQ banner across GitHub and social shar
 
 ---
 
-## 📄 License
+## 📄 Dataset & License
 
-Distributed under the **MIT License**. See `LICENSE` for details.
+- **Dataset**: Telecom customer churn dataset (6,180 raw records, 28 behavioral attributes) located in `data/raw/telecom_churn_train.csv` and `data/raw/telecom_churn_test.csv`.
+- **License**: The ChurnIQ codebase and documentation are distributed under the **MIT License**. See `LICENSE` for details.
