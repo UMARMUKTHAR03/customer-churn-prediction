@@ -978,10 +978,10 @@
         <div class="p-3.5 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-xs text-indigo-300 space-y-1">
           <div class="flex items-center gap-2 font-bold text-indigo-200">
             <span>ℹ️</span>
-            <span>Scenario Estimation Notice & Assumptions</span>
+            <span>Scenario Estimation Notice &amp; Assumptions</span>
           </div>
           <p class="text-[11px] text-indigo-300/80 leading-relaxed">
-            The What-If Simulator applies empirical sensitivity weights derived from our feature attribution analysis to estimate directional risk impact under hypothetical contract, pricing, and support interventions. This serves as a real-time decision-support tool and is mathematically distinct from full ML model re-inference.
+            The What-If Simulator executes genuine model re-inference against the production Gradient Boosting pipeline when the API is connected. The reported risk difference represents a statistical model-based hypothetical scenario under altered attributes and does not constitute a guaranteed causal churn reduction. Illustrative reclaimable values are modeled estimates.
           </p>
         </div>
       </div>
@@ -1066,12 +1066,20 @@
             <h3 class="text-base font-bold text-white">Prediction Audit History</h3>
             <p class="text-xs text-slate-400">Log of customer assessments generated during this session</p>
           </div>
-          <div class="flex items-center space-x-2">
+          <div class="flex flex-wrap items-center gap-2">
+            <!-- Search & Risk Filter for History -->
+            <select id="history-filter-risk" onchange="renderHistoryTable()" class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2.5 py-1.5 text-white focus:outline-none focus:border-indigo-500">
+              <option value="ALL">All Risk Tiers</option>
+              <option value="High">High Risk (>65%)</option>
+              <option value="Medium">Medium Risk (35-65%)</option>
+              <option value="Low">Low Risk (<35%)</option>
+            </select>
+            <input type="text" id="history-search-input" oninput="renderHistoryTable()" placeholder="Search ID or strategy..." class="bg-slate-900 border border-slate-700 text-xs rounded-lg px-2.5 py-1.5 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-44">
             <button onclick="exportHistoryCSV()" class="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">
-              Export History CSV
+              Export CSV
             </button>
             <button onclick="clearHistory()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold border border-slate-700 transition">
-              Clear History
+              Clear
             </button>
           </div>
         </div>
@@ -1547,12 +1555,14 @@
       updateWhatIfSim();
     }
 
-    function updateWhatIfSim() {
+    let whatifAbortController = null;
+
+    async function updateWhatIfSim() {
       const payload = getCustomerInputPayload();
-      // Apply counterfactuals
+      // Apply counterfactual interventions to customer profile
       if (document.getElementById('whatif-sim-contract').checked) {
         payload.contract_type = '1-year';
-        payload.monthly_charges = payload.monthly_charges * 0.85; // 15% discount
+        payload.monthly_charges = Math.max(15, payload.monthly_charges * 0.85); // 15% discount
       }
       if (document.getElementById('whatif-sim-tech').checked) {
         payload.has_tech_support = 1;
@@ -1561,17 +1571,57 @@
         payload.payment_method = 'Credit card';
       }
 
-      const simResult = predictClientSide(payload);
       const baseProb = currentPrediction ? currentPrediction.churn_probability : 78.4;
+      const simProbEl = document.getElementById('whatif-sim-prob');
+      const badgeEl = document.getElementById('whatif-reduction-badge');
+      const savedLtvEl = document.getElementById('whatif-saved-ltv');
+
+      // Attempt genuine ML re-inference via backend API if connected
+      if (isApiConnected) {
+        try {
+          if (whatifAbortController) whatifAbortController.abort();
+          whatifAbortController = new AbortController();
+
+          const res = await fetch(`${API_BASE_URL}/predict`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+            signal: whatifAbortController.signal
+          });
+
+          if (res.ok) {
+            const result = await res.json();
+            const simProb = result.churn_probability;
+            const diff = baseProb - simProb;
+
+            simProbEl.textContent = `${simProb.toFixed(1)}%`;
+            badgeEl.textContent = `${diff >= 0 ? '-' : '+'}${Math.abs(diff).toFixed(1)}% Scenario Risk Shift`;
+            badgeEl.className = diff >= 0
+              ? 'text-xs font-bold text-emerald-300 bg-emerald-500/20 px-2 py-0.5 rounded-full'
+              : 'text-xs font-bold text-rose-300 bg-rose-500/20 px-2 py-0.5 rounded-full';
+
+            const remainingMonths = Math.max(12, 72 - payload.tenure_months);
+            const savedLTV = (remainingMonths * payload.monthly_charges * (Math.max(0, diff) / 100)).toFixed(2);
+            savedLtvEl.innerHTML = `Illustrative Reclaimable Value: <span class="font-bold text-emerald-400 font-mono">$${parseFloat(savedLTV).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> <span class="text-[10px] text-slate-400">(Hypothetical scenario)</span>`;
+            return;
+          }
+        } catch (e) {
+          if (e.name !== 'AbortError') {
+            console.warn("What-If backend re-inference failed, using baseline weights:", e);
+          }
+        }
+      }
+
+      // Safe fallback when backend is unreachable
+      const simResult = predictClientSide(payload);
       const simProb = simResult.churn_probability;
       const diff = baseProb - simProb;
 
-      document.getElementById('whatif-sim-prob').textContent = `${simProb.toFixed(1)}%`;
-      document.getElementById('whatif-reduction-badge').textContent = `-${Math.max(0, diff).toFixed(1)}% Risk Reduction`;
-
+      simProbEl.textContent = `${simProb.toFixed(1)}%`;
+      badgeEl.textContent = `${diff >= 0 ? '-' : '+'}${Math.abs(diff).toFixed(1)}% Scenario Risk Shift`;
       const remainingMonths = Math.max(12, 72 - payload.tenure_months);
-      const savedLTV = (remainingMonths * payload.monthly_charges * (diff / 100)).toFixed(2);
-      document.getElementById('whatif-saved-ltv').innerHTML = `Estimated Reclaimed Value: <span class="font-bold text-emerald-400 font-mono">$${Math.max(0, parseFloat(savedLTV)).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>`;
+      const savedLTV = (remainingMonths * payload.monthly_charges * (Math.max(0, diff) / 100)).toFixed(2);
+      savedLtvEl.innerHTML = `Illustrative Reclaimable Value: <span class="font-bold text-emerald-400 font-mono">$${parseFloat(savedLTV).toLocaleString('en-US', { minimumFractionDigits: 2 })}</span> <span class="text-[10px] text-slate-400">(Hypothetical scenario)</span>`;
     }
 
     // Profile Presets
@@ -1838,7 +1888,25 @@
         tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-500">No predictions saved yet. Run a prediction and click "Save History".</td></tr>`;
         return;
       }
-      predictionHistory.forEach(item => {
+
+      const riskFilter = document.getElementById('history-filter-risk')?.value || 'ALL';
+      const searchTerm = (document.getElementById('history-search-input')?.value || '').toLowerCase().trim();
+
+      const filtered = predictionHistory.filter(item => {
+        const matchesRisk = riskFilter === 'ALL' || item.risk === riskFilter;
+        const matchesSearch = !searchTerm ||
+          (item.id && item.id.toLowerCase().includes(searchTerm)) ||
+          (item.contract && item.contract.toLowerCase().includes(searchTerm)) ||
+          (item.strategy && item.strategy.toLowerCase().includes(searchTerm));
+        return matchesRisk && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-500">No history records match the filter criteria.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(item => {
         const tr = document.createElement('tr');
         const badgeColor = item.risk === 'High' ? 'bg-rose-500/20 text-rose-300 border-rose-500/30' : (item.risk === 'Medium' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30');
         tr.className = 'hover:bg-slate-900/60 transition';

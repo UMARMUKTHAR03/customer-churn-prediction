@@ -75,14 +75,40 @@ def generate_retention_recommendation(customer_data, proba):
     """
     Synthesizes actionable retention strategies and estimates financial value saved.
     """
+    # Input validation for numerical fields and ranges
+    if 'monthly_charges' in customer_data:
+        try:
+            monthly = float(customer_data.get('monthly_charges', 75.0))
+            if monthly < 0:
+                monthly = 75.0
+        except (ValueError, TypeError):
+            monthly = 75.0
+    else:
+        monthly = 75.0
+
+    if 'tenure_months' in customer_data:
+        try:
+            tenure = float(customer_data.get('tenure_months', 6.0))
+            if tenure < 0:
+                tenure = 6.0
+        except (ValueError, TypeError):
+            tenure = 6.0
+    else:
+        tenure = 6.0
+
     contract = str(customer_data.get('contract_type', 'Month-to-month')).lower()
-    monthly = float(customer_data.get('monthly_charges', 75.0))
-    tenure = float(customer_data.get('tenure_months', 6.0))
     payment = str(customer_data.get('payment_method', 'Electronic check')).lower()
-    has_tech = int(customer_data.get('has_tech_support', 0))
-    has_security = int(customer_data.get('has_online_security', 0))
-    has_backup = int(customer_data.get('has_online_backup', 0))
-    num_complaints = int(customer_data.get('num_complaints', 0))
+
+    def _safe_int(val, default=0):
+        try:
+            return int(float(val))
+        except (ValueError, TypeError):
+            return default
+
+    has_tech = _safe_int(customer_data.get('has_tech_support', 0))
+    has_security = _safe_int(customer_data.get('has_online_security', 0))
+    has_backup = _safe_int(customer_data.get('has_online_backup', 0))
+    num_complaints = _safe_int(customer_data.get('num_complaints', 0))
 
     remaining_months = max(12, int(72 - tenure))
     at_risk_revenue = round(remaining_months * monthly * (proba / 100.0), 2)
@@ -91,30 +117,31 @@ def generate_retention_recommendation(customer_data, proba):
     key_driver = "Pricing & Contract Structure"
 
     if 'month-to-month' in contract:
-        key_driver = "Month-to-Month Contract"
-        suggestions.append("Offer 15% discount for upgrading to an annual contract commitment")
+        key_driver = "Month-to-Month Contract Commitment"
+        suggestions.append("Offer 15% discount for upgrading to an annual contract commitment (suggested due to month-to-month attrition vulnerability)")
     elif monthly > 90:
         key_driver = "High Monthly Tariff"
-        suggestions.append("Apply a $15/month loyalty bill credit for 6 months")
+        suggestions.append("Apply a $15/month loyalty bill credit for 6 months (suggested because monthly recurring charge exceeds portfolio median)")
 
     if 'electronic check' in payment:
-        suggestions.append("Incentivize enrollment in Auto-Pay with a one-time $25 account credit")
+        suggestions.append("Incentivize enrollment in Auto-Pay with a one-time $25 account credit (suggested to mitigate payment friction)")
     
     if not has_tech:
-        suggestions.append("Bundle complimentary 24/7 VIP Tech Support for 3 months")
+        suggestions.append("Bundle complimentary 24/7 VIP Tech Support for 3 months (suggested to bolster service attachment and retention)")
     if not has_security and not has_backup:
-        suggestions.append("Activate free CyberShield Security and Cloud Backup add-on package")
+        suggestions.append("Activate complimentary CyberShield Security and Cloud Backup add-on package (suggested to deepen multi-product stickiness)")
 
     if num_complaints > 0:
-        suggestions.append("Trigger priority VIP retention callback from dedicated customer success team")
+        suggestions.append("Trigger priority VIP retention callback from dedicated customer success team (suggested due to outstanding customer complaint records)")
 
     if tenure < 6:
-        suggestions.append("Enroll in New Subscriber Onboarding Concierge for personalized service checks")
+        suggestions.append("Enroll in New Subscriber Onboarding Concierge for personalized service checks (suggested due to early tenure defection hazard)")
 
     if not suggestions:
-        suggestions.append("Award Platinum Loyalty status and offer complimentary speed boost perk")
+        suggestions.append("Award Platinum Loyalty status and offer complimentary speed boost perk (suggested as high-tenure customer appreciation)")
 
     action_text = " • ".join(suggestions[:3])
+    # Clearly defined illustrative estimate (65% indicative recovery factor)
     est_saved = round(at_risk_revenue * 0.65, 2)
 
     return {
@@ -122,7 +149,8 @@ def generate_retention_recommendation(customer_data, proba):
         'action_summary': action_text,
         'detailed_suggestions': suggestions,
         'at_risk_revenue': at_risk_revenue,
-        'estimated_saved_revenue': est_saved
+        'estimated_saved_revenue': est_saved,
+        'recovery_basis': '65% illustrative benchmark estimate (not a proven causal recovery rate)'
     }
 
 
@@ -263,22 +291,33 @@ def predict_individual():
         if not data or not isinstance(data, dict):
             return jsonify({'error': 'Invalid request payload. Expected a JSON object with customer features.'}), 400
 
-        # Input validation for required core fields
-        if 'monthly_charges' in data:
+        # Input validation for required core fields and domain boundaries
+        if 'monthly_charges' in data and data['monthly_charges'] is not None:
             try:
                 charges = float(data['monthly_charges'])
-                if charges < 0:
-                    return jsonify({'error': 'monthly_charges must be non-negative.'}), 400
-            except ValueError:
+                if charges < 0 or np.isnan(charges) or np.isinf(charges):
+                    return jsonify({'error': 'monthly_charges must be a non-negative finite number.'}), 400
+            except (ValueError, TypeError):
                 return jsonify({'error': 'monthly_charges must be a valid numeric value.'}), 400
 
-        if 'tenure_months' in data:
+        if 'tenure_months' in data and data['tenure_months'] is not None:
             try:
                 tenure = float(data['tenure_months'])
-                if tenure < 0:
-                    return jsonify({'error': 'tenure_months must be non-negative.'}), 400
-            except ValueError:
+                if tenure < 0 or np.isnan(tenure) or np.isinf(tenure):
+                    return jsonify({'error': 'tenure_months must be a non-negative finite number.'}), 400
+            except (ValueError, TypeError):
                 return jsonify({'error': 'tenure_months must be a valid numeric value.'}), 400
+
+        for num_field in ['age', 'income', 'total_charges', 'num_support_calls', 'num_complaints', 'nps_score', 'data_usage_gb', 'minutes_used', 'sms_sent']:
+            if num_field in data and data[num_field] is not None:
+                try:
+                    val = float(data[num_field])
+                    if val < 0 and num_field not in ['competitor_price_diff']:
+                        return jsonify({'error': f'{num_field} cannot be negative.'}), 400
+                    if np.isnan(val) or np.isinf(val):
+                        return jsonify({'error': f'{num_field} must be a valid finite number.'}), 400
+                except (ValueError, TypeError):
+                    return jsonify({'error': f'{num_field} must be a valid numeric value.'}), 400
 
         # Transform features using preprocessor (strictly matching training)
         input_df = pd.DataFrame([data])
@@ -395,8 +434,38 @@ def predict_batch():
         else:
             id_col = pd.Series([f"CUST-{1000 + i}" for i in range(total_records)])
 
+        # Row-level validation and safe cleansing
+        cleaned_rows = []
+        row_errors = []
+        for idx in range(total_records):
+            raw_r = df.iloc[idx].to_dict()
+            clean_r = {}
+            for k, v in raw_r.items():
+                if pd.isna(v):
+                    clean_r[k] = None
+                else:
+                    clean_r[k] = v
+            # Ensure essential numeric fields are positive or defaulted gracefully
+            if 'monthly_charges' in clean_r and clean_r['monthly_charges'] is not None:
+                try:
+                    ch = float(clean_r['monthly_charges'])
+                    clean_r['monthly_charges'] = max(0.0, ch) if not (np.isnan(ch) or np.isinf(ch)) else 75.0
+                except (ValueError, TypeError):
+                    clean_r['monthly_charges'] = 75.0
+
+            if 'tenure_months' in clean_r and clean_r['tenure_months'] is not None:
+                try:
+                    tn = float(clean_r['tenure_months'])
+                    clean_r['tenure_months'] = max(0.0, tn) if not (np.isnan(tn) or np.isinf(tn)) else 6.0
+                except (ValueError, TypeError):
+                    clean_r['tenure_months'] = 6.0
+
+            cleaned_rows.append(clean_r)
+
+        cleaned_df = pd.DataFrame(cleaned_rows)
+
         # Preprocess features
-        X_trans = preprocessor.transform(df)
+        X_trans = preprocessor.transform(cleaned_df)
 
         # Batch ML inference
         preds = model.predict(X_trans)
@@ -412,7 +481,7 @@ def predict_batch():
             p = int(preds[i])
             prob_pct = round(float(probas[i]) * 100, 2)
             cid = id_col.iloc[i]
-            row_dict = df.iloc[i].to_dict()
+            row_dict = cleaned_rows[i]
 
             if prob_pct >= 65.0:
                 risk = "High"

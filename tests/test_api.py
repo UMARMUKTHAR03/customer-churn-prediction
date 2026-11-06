@@ -123,4 +123,59 @@ def test_predict_batch_raw_array(client):
     assert data['total_processed'] == 2
     assert data['summary']['total_customers'] == 2
 
+def test_predict_validation_invalid_numeric(client):
+    # Test negative monthly charges
+    res = client.post('/predict', json={'monthly_charges': -10.0, 'tenure_months': 12})
+    assert res.status_code == 400
+    assert 'error' in res.get_json()
+
+    # Test negative tenure
+    res2 = client.post('/predict', json={'monthly_charges': 50.0, 'tenure_months': -5})
+    assert res2.status_code == 400
+    assert 'error' in res2.get_json()
+
+def test_whatif_scenario_re_inference(client):
+    # Baseline profile
+    baseline_payload = {
+        'customer_id': 'WHATIF-BASE',
+        'contract_type': 'Month-to-month',
+        'tenure_months': 2,
+        'monthly_charges': 105.0,
+        'has_tech_support': 0,
+        'payment_method': 'Electronic check'
+    }
+    res_base = client.post('/predict', json=baseline_payload)
+    assert res_base.status_code == 200
+    base_data = res_base.get_json()
+
+    # Counterfactual intervention
+    scenario_payload = baseline_payload.copy()
+    scenario_payload['contract_type'] = '1-year'
+    scenario_payload['monthly_charges'] = 89.25
+    scenario_payload['has_tech_support'] = 1
+    scenario_payload['payment_method'] = 'Credit card'
+
+    res_scenario = client.post('/predict', json=scenario_payload)
+    assert res_scenario.status_code == 200
+    scenario_data = res_scenario.get_json()
+
+    # Genuine re-inference should exhibit altered risk and valid probability
+    assert scenario_data['churn_probability'] < base_data['churn_probability']
+    assert scenario_data['risk_level'] in ['High', 'Medium', 'Low']
+    assert 'recovery_basis' in scenario_data['retention_strategy']
+
+def test_batch_row_level_cleansing_and_robustness(client):
+    # Batch containing rows with invalid/missing numeric fields to test safe row-level imputation
+    batch = {
+        'customers': [
+            {'customer_id': 'CLEAN-1', 'contract_type': 'Month-to-month', 'tenure_months': -2, 'monthly_charges': 95.0},
+            {'customer_id': 'CLEAN-2', 'contract_type': '1-year', 'tenure_months': 24, 'monthly_charges': 'invalid_charge_string'},
+            {'customer_id': 'CLEAN-3', 'contract_type': '2-year', 'tenure_months': 48, 'monthly_charges': 65.0}
+        ]
+    }
+    res = client.post('/predict-batch', json=batch)
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data['total_processed'] == 3
+    assert len(data['predictions']) == 3
 

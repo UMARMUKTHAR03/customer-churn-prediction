@@ -3,9 +3,9 @@
 <div align="center">
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-ChurnIQ_Web_Platform-6366F1?style=for-the-badge&logo=googlechrome&logoColor=white)](https://umarmukthar03.github.io/customer-churn-prediction/)
-[![Accuracy](https://img.shields.io/badge/Model_Accuracy-92.2%25-10B981?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://umarmukthar03.github.io/customer-churn-prediction/)
-[![Precision](https://img.shields.io/badge/Precision-98.2%25-8B5CF6?style=for-the-badge)](https://umarmukthar03.github.io/customer-churn-prediction/)
-[![ROC-AUC](https://img.shields.io/badge/ROC--AUC-0.929-F59E0B?style=for-the-badge)](https://umarmukthar03.github.io/customer-churn-prediction/)
+[![Accuracy](https://img.shields.io/badge/Model_Accuracy-95.3%25-10B981?style=for-the-badge&logo=scikitlearn&logoColor=white)](https://umarmukthar03.github.io/customer-churn-prediction/)
+[![Precision](https://img.shields.io/badge/Precision-97.7%25-8B5CF6?style=for-the-badge)](https://umarmukthar03.github.io/customer-churn-prediction/)
+[![ROC-AUC](https://img.shields.io/badge/ROC--AUC-0.948-F59E0B?style=for-the-badge)](https://umarmukthar03.github.io/customer-churn-prediction/)
 [![CI/CD](https://img.shields.io/badge/CI%2FCD-Passing-34D399?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/UMARMUKTHAR03/customer-churn-prediction/actions)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 [![Author](https://img.shields.io/badge/Engineered_By-Umar_Mukthar-rose?style=for-the-badge&logo=github)](https://github.com/UMARMUKTHAR03)
@@ -48,7 +48,7 @@ Customer churn is one of the most critical revenue risks faced by modern telecom
 | Category | Capability |
 | :--- | :--- |
 | **🔮 Live Predictor** | Interactive customer profile entry with sliders, dropdowns, checkboxes, and realistic test profiles. Real-time probability gauge and LTV risk estimation. |
-| **🧠 Genuine ML Models** | Benchmarked Random Forest (350 estimators) and XGBoost with zero data leakage and consistent preprocessing. |
+| **🧠 Genuine ML Models** | Benchmarked Gradient Boosting (200 estimators, Selected), XGBoost, and Random Forest with zero data leakage and consistent preprocessing. |
 | **🔍 Explainable AI (SHAP)** | Local and global feature attribution highlighting root factors driving or mitigating churn. |
 | **🎛️ What-If Counterfactual Simulator** | Interactive scenario panel allowing retention agents to test hypothetical contract switches, price discounts, and add-on activations to observe instant risk reduction. |
 | **💡 Retention Recommendations** | Intelligent prescription engine suggesting contract migration, discount credits, and VIP tech support bundles. |
@@ -74,7 +74,7 @@ Retention agents enter individual customer attributes to receive instant churn p
 ![ChurnIQ Prediction](assets/screenshots/churniq-prediction.png)
 
 ### 3. Model Analytics & Verified Evaluation Curves
-Transparent model governance showing the confusion matrix (900 True Negatives, only 4 False Positives), receiver operating characteristic (ROC-AUC 0.9291), precision-recall trade-offs, and global Gini feature importances.
+Transparent model governance showing the confusion matrix (898 True Negatives, only 6 False Positives), receiver operating characteristic (ROC-AUC 0.9483), precision-recall trade-offs, and global Gini feature importances.
 
 ![ChurnIQ Analytics](assets/screenshots/churniq-analytics.png)
 
@@ -120,7 +120,7 @@ graph TD
 
     subgraph "Machine Learning Engine"
         PREP["TelecomDataPreprocessor: models/preprocessor.joblib"]
-        RF["Random Forest Classifier (350 Trees): models/best_model.joblib"]
+        GB["Gradient Boosting Classifier (200 Estimators): models/best_model.joblib"]
         XGB["XGBoost Classifier (Benchmark)"]
         SHAP["SHAP TreeExplainer (Feature Attribution)"]
     end
@@ -134,7 +134,7 @@ graph TD
     UI --> LP & WI & BP & PDF & AP & AN
     LP & WI & BP -->|HTTPS REST| API
     API --> H_EP & M_EP & A_EP & P_EP & PB_EP
-    P_EP & PB_EP --> PREP --> RF & SHAP
+    P_EP & PB_EP --> PREP --> GB & SHAP
     A_EP --> METRICS
     PREP -.-> RAW & PROC
 ```
@@ -149,22 +149,23 @@ All candidate algorithms were benchmarked on an **independent holdout test set (
 
 | Algorithm | Accuracy | Precision | Recall | F1 Score | ROC-AUC | Status |
 | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Random Forest (Selected)** | **92.23%** | **98.18%** | **70.59%** | **0.8213** | **0.9291** | 🏆 **Production Primary** |
-| **XGBoost** | **94.96%** | **97.67%** | **82.03%** | **0.8917** | **0.9515** | 🚀 **Production Alternative** |
-| **Gradient Boosting** | **95.29%** | **97.70%** | **83.33%** | **0.8995** | **0.9483** | High Performance |
-| **Decision Tree** | **92.15%** | **89.81%** | **77.78%** | **0.8336** | **0.9081** | Baseline Tree |
-| **Logistic Regression** | **81.16%** | **72.67%** | **40.85%** | **0.5230** | **0.8009** | Linear Baseline |
+| **Gradient Boosting (Selected)** | **95.29%** | **97.70%** | **83.33%** | **0.8995** | **0.9483** | 🏆 **Production Primary** |
+| **XGBoost** | **94.27%** | **96.34%** | **80.38%** | **0.8762** | **0.9325** | 🚀 **Production Alternative** |
+| **Random Forest** | **91.38%** | **96.96%** | **68.03%** | **0.7992** | **0.9184** | Robust Ensemble |
+| **Decision Tree** | **90.24%** | **87.39%** | **71.71%** | **0.7873** | **0.8931** | Baseline Tree |
+| **Logistic Regression** | **80.20%** | **68.91%** | **39.99%** | **0.5048** | **0.7964** | Linear Baseline |
 
 ### Confusion Matrix on Unseen Holdout Data
 
 | Actual \ Predicted | Predicted No Churn (Retained) | Predicted Churn (At-Risk) | Total Actual |
 | :--- | :---: | :---: | :---: |
-| **Actual No Churn (0)** | **900** (True Negative) | **4** (False Positive / 0.4%) | 904 |
-| **Actual Churn (1)** | **90** (False Negative) | **216** (True Positive / 70.6%) | 306 |
-| **Total Predicted** | 990 | 220 | **1,210** |
+| **Actual No Churn (0)** | **898** (True Negative) | **6** (False Positive / 0.6%) | 904 |
+| **Actual Churn (1)** | **51** (False Negative) | **255** (True Positive / 83.3%) | 306 |
+| **Total Predicted** | 949 | 261 | **1,210** |
 
-- **Precision of 98.18%**: When ChurnIQ flags an account as at-risk, it is accurate **98.2% of the time**, eliminating wasted retention spending on happy customers.
-- **Accuracy of 92.23%**: High overall classification consistency on holdout data.
+- **Precision of 97.70%**: When ChurnIQ flags an account as at-risk, it is accurate **97.7% of the time**, eliminating wasted retention spending on happy customers.
+- **Accuracy of 95.29%**: High overall classification consistency on holdout data.
+- **Recall of 83.33%**: Intercepts over 83% of subscriber defections prior to contract lapse.
 
 ---
 
@@ -220,7 +221,7 @@ customer-churn-prediction/
 │       └── final_predictions.csv     # Batch output on test set
 │
 ├── models/                       # Serialized model artifacts
-│   ├── best_model.joblib         # Trained Random Forest classifier
+│   ├── best_model.joblib         # Trained Gradient Boosting classifier (200 estimators)
 │   ├── best_model.pkl            # Backwards-compatible pickle artifact
 │   ├── explainer.joblib          # Fitted SHAP TreeExplainer
 │   ├── preprocessor.joblib       # Fitted TelecomDataPreprocessor

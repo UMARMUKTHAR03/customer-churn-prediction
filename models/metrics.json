@@ -9,8 +9,8 @@
   "selection_metric": "Mean 5-Fold Stratified Cross-Validation F1 Score (Primary) & ROC-AUC (Secondary)",
   "locked_decision_threshold": 0.5,
   "threshold_selection_rationale": "Selected canonical 0.50 decision threshold based strictly on out-of-fold training CV analysis (F1=0.8895, Precision=96.37%, Recall=82.58%), providing optimal business balance between high precision and churn capture without holdout contamination.",
-  "training_date": "2026-11-05 19:51:54 UTC",
-  "execution_time_sec": 68.41,
+  "training_date": "2026-11-06 09:28:32 UTC",
+  "execution_time_sec": 73.09,
   "dataset_stats": {
     "raw_records": 6180,
     "deduplicated_records": 6048,
